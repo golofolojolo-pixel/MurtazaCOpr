@@ -148,18 +148,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     <div class="articles-compact reveal" id="articles-grid" style="scroll-margin-top:110px;">
 
       <div class="article-category" data-category="Materials">
-        <p class="article-category-label">Materials <span class="count">(2)</span></p>
+        <p class="article-category-label">Materials <span class="count">(1)</span></p>
         <div class="article-category-rows">
-          <a class="article-row" href="#welded-vs-seamless-steel-pipes">
-            <span class="article-row-num">08</span>
-            <span class="article-row-body">
-              <span class="article-row-title">Welded vs. Seamless Steel Pipes: Procurement and Application Guide</span>
-              <span class="article-row-excerpt">A practical engineering comparison between welded and seamless steel pipes, detailing manufacturing differences, pressure ratings, and procurement factors.</span>
-            </span>
-            <span class="article-row-meta">5 min read</span>
-            <span class="article-row-arrow">&rarr;</span>
-          </a>
-
           <!-- AUTO-CARDS:START -->
           <a class="article-row" href="#article-304-vs-316">
             <span class="article-row-num">01</span>
@@ -175,18 +165,8 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
       </div>
 
       <div class="article-category" data-category="Piping Design">
-        <p class="article-category-label">Piping Design <span class="count">(2)</span></p>
+        <p class="article-category-label">Piping Design <span class="count">(1)</span></p>
         <div class="article-category-rows">
-          <a class="article-row" href="#butt-weld-vs-socket-weld-fittings">
-            <span class="article-row-num">09</span>
-            <span class="article-row-body">
-              <span class="article-row-title">Butt Weld vs. Socket Weld Fittings: Selection and Application Guidelines</span>
-              <span class="article-row-excerpt">Understand the key differences between butt weld and socket weld fittings to make informed decisions on pressure ratings, installation costs, and system integrity.</span>
-            </span>
-            <span class="article-row-meta">5 min read</span>
-            <span class="article-row-arrow">&rarr;</span>
-          </a>
-
           <a class="article-row" href="#article-pipe-schedules">
             <span class="article-row-num">02</span>
             <span class="article-row-body">
@@ -216,69 +196,78 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
     </div>
 
+    <!--
+      ============================================================
+      CONTENT-PLACEMENT TEMPLATE — reference only, never rendered.
+      ============================================================
+      Everything inside <template> tags below is inert: browsers parse it
+      but never display it or run it. It exists purely as a copy-pasteable,
+      always-in-sync reference for exactly how new content must be shaped —
+      for scripts/generate-article.mjs, and for anyone editing this page
+      by hand. Do not delete these templates when new articles are added.
+
+      Placeholders use {{DOUBLE_BRACE}} notation — replace them, don't
+      leave them in published content.
+
+      Three pieces per new article:
+        1. #tpl-article-row      → one row inside the correct
+                                    .article-category-rows (or a whole new
+                                    .article-category block, template #2,
+                                    if the topic doesn't fit an existing one)
+        2. #tpl-article-category → only needed when introducing a brand-new
+                                    category not already on the page
+        3. #tpl-article-body     → the full write-up, added as the FIRST
+                                    child right after AUTO-ARTICLES:START below
+    -->
+
+    <template id="tpl-article-row">
+      <a class="article-row" href="#{{SLUG}}">
+        <span class="article-row-num">{{NUM}}</span>
+        <span class="article-row-body">
+          <span class="article-row-title">{{TITLE}}</span>
+          <span class="article-row-excerpt">{{EXCERPT}}</span>
+        </span>
+        <span class="article-row-meta">{{READ_TIME}} min read</span>
+        <span class="article-row-arrow">&rarr;</span>
+      </a>
+    </template>
+
+    <template id="tpl-article-category">
+      <div class="article-category" data-category="{{CATEGORY}}">
+        <p class="article-category-label">{{CATEGORY}} <span class="count">({{COUNT}})</span></p>
+        <div class="article-category-rows">
+          <!-- one or more #tpl-article-row instances go here, newest first -->
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-article-body">
+      <div id="{{SLUG}}" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
+        <p class="eyebrow" style="margin:0 0 8px;">Article {{NUM}} &middot; {{CATEGORY}} &middot; {{READ_TIME}} min read</p>
+        <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">{{TITLE}}</h3>
+
+        <!-- intro paragraph -->
+        <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">{{INTRO}}</p>
+
+        <!-- repeat this heading + paragraph(s) + optional list block per section (3-5 sections) -->
+        <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">{{SECTION_HEADING}}</h4>
+        <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">{{SECTION_PARAGRAPH}}</p>
+        <ul class="stock-list" style="margin:0 0 16px;">
+          <li>{{BULLET}}</li>
+          <!-- optional — omit the whole <ul> if a section has no bullets -->
+        </ul>
+
+        <!-- closing paragraph — the ONLY paragraph in the article using margin:0 instead of margin:0 0 16px -->
+        <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;">{{CLOSING}} See our <a href="{{LINK_PAGE}}" style="color:var(--color-ink);text-decoration:underline;">{{LINK_LABEL}}</a> page for more.</p>
+
+        <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
+      </div>
+    </template>
+
     <!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->
-    <div id="butt-weld-vs-socket-weld-fittings" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 09 &middot; Piping Design &middot; 5 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Butt Weld vs. Socket Weld Fittings: Selection and Application Guidelines</h3>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Selecting the appropriate joint type for industrial piping systems is critical to ensuring long-term structural integrity and leak-free operation. While both butt weld and socket weld fittings are widely used to join pipe sections, they serve distinct application ranges, pressure ratings, and pipe sizes. Understanding their structural differences, installation complexities, and cost implications helps procurement and engineering teams optimize piping designs.</p>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Structural Differences and Size Ranges</h4>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Butt weld fittings are designed with a beveled end that aligns perfectly with the pipe's beveled end, allowing for a full-penetration weld directly between the two components. This creates a smooth internal bore with minimal flow restriction and no crevices. In contrast, socket weld fittings feature a recessed socket into which the plain-end pipe is inserted before a fillet weld is applied around the outer rim of the socket.</p>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Because of these design characteristics, each type is suited to different pipe sizes. Butt weld fittings are the industry standard for larger lines, whereas socket weld fittings are the preferred choice for small-bore piping where alignment clamps are impractical.</p>
-
-      <ul class="stock-list" style="margin:0 0 16px;">
-        <li>Butt weld fittings are standard for larger pipe sizes typically two inches and above.</li>
-        <li>Socket weld fittings are generally restricted to small-bore piping systems under two inches.</li>
-        <li>Butt weld designs offer a continuous internal transition that prevents localized turbulence and erosion.</li>
-      </ul>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Pressure Ratings and Stress Concentration</h4>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Socket weld fittings are inherently prone to stress concentrations at the root of the fillet weld, making them less suitable for highly cyclic or severe services where fatigue failure is a concern. Additionally, standard piping codes require a 1/16-inch expansion gap at the bottom of the socket before welding to accommodate thermal expansion, which is often neglected during fabrication.</p>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Butt weld joints, when properly executed with full penetration, distribute stress evenly across the joint. This structural uniformity makes them the preferred choice for high-pressure, high-temperature, and critical chemical services where the risk of crack propagation must be minimized.</p>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Installation, Welding, and Inspection</h4>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">The fabrication process for socket weld fittings is faster and easier for small-bore pipes because the socket acts as a built-in alignment guide, eliminating the need for complex tack welding or temporary clamps. However, inspecting socket welds is more difficult, as volumetric examination methods like radiography are challenging to perform on fillet welds, leaving visual inspection and liquid penetrant testing as the primary options.</p>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Conversely, butt weld joints require precise bevel preparation and alignment but allow for complete radiographic or ultrasonic inspection to verify weld quality throughout the entire thickness of the joint.</p>
-
-      <ul class="stock-list" style="margin:0 0 16px;">
-        <li>Socket welds require a mandatory expansion gap to prevent weld cracking during thermal cycles.</li>
-        <li>Butt welds allow for non-destructive volumetric testing to ensure 100 percent joint integrity.</li>
-        <li>Alignment of butt weld joints is highly dependent on the skill of the welder and the consistency of the pipe wall thickness.</li>
-      </ul>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;">Selecting the correct fitting type is essential for balancing system reliability with fabrication costs. Murtaza Corporation stocklists a comprehensive range of both high-quality butt weld and socket weld fittings, along with matching pipes and flanges, to meet the stringent demands of industrial piping projects. See our <a href="fittings.html" style="color:var(--color-ink);text-decoration:underline;">fittings</a> page for more.</p>
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
-    <div id="welded-vs-seamless-steel-pipes" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 08 &middot; Materials &middot; 5 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Welded vs. Seamless Steel Pipes: Procurement and Application Guide</h3>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Selecting between welded and seamless steel pipes is one of the most fundamental decisions in piping design, material procurement, and system fabrication. Both manufacturing methods yield products with distinct mechanical characteristics, dimensional tolerances, and cost structures. Understanding these differences ensures that engineers and procurement officers can optimize safety, performance, and project budgets.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Manufacturing Processes and Structural Integrity</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Seamless and welded <a href="pipes.html" style="color:var(--color-ink);text-decoration:underline;">pipes</a> differ primarily in how the hollow cylindrical shape is formed. Seamless pipes are produced by drawing a solid steel round billet through a piercing mill and then rolling or extruding it to its final dimensions. Because they are formed without any seam, they possess a completely homogenous grain structure, which inherently eliminates the risk of weld-line defects.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">In contrast, welded pipes are manufactured by rolling a flat steel plate or strip (skelp) into a cylinder and joining the longitudinal seam. This is typically achieved through Electric Resistance Welding (ERW), Electric Fusion Welding (EFW), or Submerged Arc Welding (SAW). Modern welding technologies have significantly improved weld seam reliability, but a microscopic heat-affected zone (HAZ) still remains at the joint.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Pressure Ratings and Joint Efficiency Factors</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">From an engineering perspective, the presence of a weld seam directly affects the allowable design pressure of the piping system. According to codes like ASME B31.3, the pressure design of welded pipe must incorporate a joint efficiency factor (E). This factor varies based on the type of weld and the level of non-destructive testing (NDT) applied:</p><ul class="stock-list" style="margin:0 0 16px;"><li>Seamless pipes are assigned a joint efficiency factor of 1.0, reflecting absolute structural integrity.</li><li>Welded pipes subjected to 100% radiographic testing can also achieve a joint efficiency of 1.0.</li><li>Welded pipes with spot radiography or no NDT may have joint efficiency factors ranging from 0.85 down to 0.60, requiring a thicker wall to handle the same pressure.</li></ul><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Procurement teams must carefully verify these specifications on the manufacturer's <a href="mill-test-report.html" style="color:var(--color-ink);text-decoration:underline;">mill test report</a> to confirm that the selected pipe meets the safety factors required for the application.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Dimensional Tolerances and Wall Uniformity</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">An often-overlooked advantage of welded <a href="tubes.html" style="color:var(--color-ink);text-decoration:underline;">tubes</a> and pipes is their superior dimensional tolerance. Because welded pipes are formed from flat-rolled steel plates, which have highly uniform and tightly controlled thicknesses, the final pipe exhibits excellent concentricity and wall thickness consistency. Seamless pipes, due to the rotary piercing process, are prone to slight wall thickness eccentricity, where one side of the pipe wall may be slightly thicker than the other.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Cost, Availability, and Application Guidelines</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Cost is a major driver in procurement. Welded pipes are generally more economical to manufacture and purchase, particularly in larger nominal pipe sizes. Seamless piping becomes exponentially more expensive as the diameter increases, and manufacturing seamless pipe above 24 inches requires specialized heavy machinery, limiting availability.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">For critical high-pressure, high-temperature, or highly corrosive environments (such as hydrocarbon processing, steam lines, or hydraulic systems), seamless pipe remains the industry standard. For general utility lines, low-pressure fluids, structural supports, and large-diameter municipal water networks, welded pipe paired with appropriate <a href="fittings.html" style="color:var(--color-ink);text-decoration:underline;">fittings</a> offers a highly reliable, cost-effective alternative.</p> </div>
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
-    <div id="hygienic-piping-asme-bpe-dairy-tubing" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 01 &middot; Standards &amp;amp; Codes &middot; 4 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Hygienic Piping: Understanding ASME BPE and Dairy Tubing Standards</h3>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">The Core Principles of Hygienic Piping</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Hygienic or sanitary piping systems are designed specifically for industries where contamination control is paramount, such as pharmaceuticals, biotechnology, food, beverage, and cosmetics. Unlike standard utility piping, hygienic systems must prevent bacterial growth, product entrapment, and corrosion. This is achieved through ultra-smooth contact surfaces, crevice-free joints, and self-draining configurations. High-purity systems rely on specialized <a href="dairy-tubes.html" style="color:var(--color-ink);text-decoration:underline;">dairy tubes</a> and fittings manufactured to rigorous dimensional and surface finish standards.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Surface Finish and the Importance of Ra</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">The primary differentiator of hygienic piping is the internal surface finish, quantified as Roughness Average (Ra). A rougher internal surface provides microscopic pockets where microorganisms can colonize and resist Cleaning-in-Place (CIP) chemicals. ASME BPE defines several Surface Finish (SF) designations, categorizing them into mechanical polishing and electropolishing (EP). Mechanical polishing uses abrasives to physically smooth the metal, while electropolishing uses an electrochemical process to dissolve microscopic high points, leaving a highly passive layer. For most dairy applications, an internal Ra of 0.8 micrometers (32 micro-inches) is standard, whereas pharmaceutical systems often demand electropolished surfaces with an Ra of 0.38 micrometers (15 micro-inches) or lower.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">ASME BPE vs. Conventional Standards</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">While standard process piping typically falls under ASME B31.3, high-purity systems utilize the ASME BPE (Bioprocess Equipment) standard. ASME BPE governs everything from dimensional tolerances of <a href="tubes.html" style="color:var(--color-ink);text-decoration:underline;">tubes</a> and <a href="fittings.html" style="color:var(--color-ink);text-decoration:underline;">fittings</a> to material composition, fabrication, and inspections. A key distinction is the requirement for orbital welding compatibility. ASME BPE specifies tight controls on the sulfur content of stainless steel (typically 0.005% to 0.017%) to ensure consistent weld penetration and bead chemistry during automatic orbital welding, which prevents root-pass defects.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Hygienic Connection Types</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">To maintain a sterile boundary, connections must be completely crevice-free. Traditional threaded joints are prohibited because product can settle in the thread paths. Flanged connections are also rare due to potential dead legs. Instead, hygienic systems rely on:</p><ul class=
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
     <!-- ARTICLE 1 -->
     <div id="article-304-vs-316" style="margin-top:64px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 02 &middot; Materials &middot; 6 min read</p>
+      <p class="eyebrow" style="margin:0 0 8px;">Article 01 &middot; Materials &middot; 6 min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">304 vs 316 Stainless Steel: Choosing the Right Grade</h3>
 
       <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">304 and 316 are the two grades that come up in almost every piping enquiry, and it's easy to see why they get confused — both are austenitic, both are non-magnetic in the annealed condition, and both machine, weld and polish in much the same way. The difference that matters is molybdenum: 316 contains 2–3% Mo, which 304 does not, and that single alloying addition changes where each grade belongs in a plant.</p>
@@ -304,7 +293,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
     <!-- ARTICLE 2 -->
     <div id="article-pipe-schedules" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 03 &middot; Piping Design &middot; 5 min read</p>
+      <p class="eyebrow" style="margin:0 0 8px;">Article 02 &middot; Piping Design &middot; 5 min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Pipe Schedules Explained: Picking the Right Wall Thickness</h3>
 
       <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">The "schedule" number stamped on a pipe spec — SCH10, SCH40, SCH80, SCH160 — is simply a standardized way of expressing wall thickness relative to outside diameter, as set out in ASME B36.19 (stainless) and B36.10 (carbon steel). A higher schedule number means a thicker wall for the same nominal pipe size (NPS/DN), and therefore a smaller internal bore.</p>
@@ -329,7 +318,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
     <!-- ARTICLE 3 -->
     <div id="article-mill-test-certificates" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 04 &middot; Quality &amp; Traceability &middot; 5 min read</p>
+      <p class="eyebrow" style="margin:0 0 8px;">Article 03 &middot; Quality &amp; Traceability &middot; 5 min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Reading a Mill Test Certificate: 3.1 vs 3.2 Explained</h3>
 
       <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Almost every purchase order for pipe, fittings or valves asks for a "Mill Test Certificate" or "MTC," usually with a reference to EN 10204. In practice, the standard defines several inspection document types, and mixing them up can mean receiving less traceability than a project actually needs.</p>
