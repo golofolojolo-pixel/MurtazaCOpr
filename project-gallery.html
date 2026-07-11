@@ -220,36 +220,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 </footer>
 
 <script src="script.js" defer></script>
-<script>
-  // Project gallery — minimal carousel (no autoplay, no dependencies)
-  document.querySelectorAll('[data-carousel]').forEach(function (carousel) {
-    var slides = carousel.querySelectorAll('.carousel-slide');
-    var dots = carousel.querySelectorAll('.carousel-dots span');
-    var prevBtn = carousel.querySelector('.carousel-nav.prev');
-    var nextBtn = carousel.querySelector('.carousel-nav.next');
-    var index = 0;
-
-    function show(i) {
-      index = (i + slides.length) % slides.length;
-      slides.forEach(function (s, n) { s.classList.toggle('is-active', n === index); });
-      dots.forEach(function (d, n) { d.classList.toggle('is-active', n === index); });
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', function () { show(index - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { show(index + 1); });
-    dots.forEach(function (dot, n) { dot.addEventListener('click', function () { show(n); }); });
-
-    // Touch swipe support
-    var startX = null;
-    carousel.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
-    carousel.addEventListener('touchend', function (e) {
-      if (startX === null) return;
-      var diff = e.changedTouches[0].clientX - startX;
-      if (Math.abs(diff) > 40) show(diff < 0 ? index + 1 : index - 1);
-      startX = null;
-    }, { passive: true });
-  });
-</script>
 <a href="#" class="calculator-widget" id="calculatorWidgetBtn" aria-label="Open pipe calculator">
     <span class="whatsapp-text">Calculator</span>
     <div class="calculator-icon"><i class="fa-solid fa-calculator"></i></div>
