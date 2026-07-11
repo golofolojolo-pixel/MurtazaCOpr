@@ -96,88 +96,68 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
       <p>Murtaza Corporation is driven by continuous improvement and a strong customer focus &mdash; aiming to be a leader in giving our customers excellent value, top-quality products, and outstanding service at every stage of the order.</p>
     </div>
 
-    <div class="services-mindmap-wrap reveal">
-      <p class="eyebrow">How it all connects</p>
-      <p class="services-mindmap-caption">Four services, one order. Click any branch to jump straight to it.</p>
+    <div class="services-nav-wrap reveal">
+      <p class="eyebrow">Our Services</p>
+      <p class="services-nav-caption">Four services, one order &mdash; jump straight to what you need.</p>
 
-      <svg class="services-mindmap" viewBox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mind map of Murtaza Corporation's four services: Counter Sales, Project Tender, Supply and Logistics, and Projects Feasibility">
-
-        <!-- connecting paths: center to branches -->
-        <path class="mm-path" d="M500,70 C500,105 130,85 130,120" />
-        <path class="mm-path" d="M500,70 C500,100 375,95 375,120" />
-        <path class="mm-path" d="M500,70 C500,100 620,95 620,120" />
-        <path class="mm-path" d="M500,70 C500,105 865,85 865,120" />
-
-        <!-- connecting paths: branches to leaves -->
-        <path class="mm-path-leaf" d="M130,172 L130,200" />
-        <path class="mm-path-leaf" d="M130,228 L130,236" />
-        <path class="mm-path-leaf" d="M375,172 L375,200" />
-        <path class="mm-path-leaf" d="M375,228 L375,236" />
-        <path class="mm-path-leaf" d="M620,172 L620,200" />
-        <path class="mm-path-leaf" d="M620,228 L620,236" />
-        <path class="mm-path-leaf" d="M865,172 L865,200" />
-        <path class="mm-path-leaf" d="M865,228 L865,236" />
-
-        <!-- center node -->
-        <g>
-          <rect class="mm-node-rect" x="400" y="14" width="200" height="56" rx="28" fill="var(--color-ink,#1f1d1e)" />
-          <text class="mm-center-label" x="500" y="48" text-anchor="middle">Our Services</text>
-        </g>
-
-        <!-- branch: Counter Sales -->
-        <a href="#svc-counter-sales" class="mm-link" aria-label="Jump to Counter Sales">
-          <rect class="mm-node-rect" x="15" y="120" width="230" height="52" rx="16" fill="#1e37a0" />
-          <text class="mm-branch-label" x="130" y="152" text-anchor="middle">Counter Sales</text>
+      <div class="services-nav-grid">
+        <a href="#svc-counter-sales" class="services-nav-item">
+          <span class="services-nav-icon"><i class="fa-solid fa-shop"></i></span>
+          <span class="services-nav-body">
+            <span class="services-nav-title">Counter Sales</span>
+            <span class="services-nav-desc">Professional walk-in assistance</span>
+          </span>
+          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
         </a>
-        <rect class="mm-leaf-pill" x="15" y="200" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="130" y="218" text-anchor="middle">In-person advice</text>
-        <rect class="mm-leaf-pill" x="15" y="236" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="130" y="254" text-anchor="middle">Same-day pickup</text>
 
-        <!-- branch: Project Tender -->
-        <a href="#svc-project-tender" class="mm-link" aria-label="Jump to Project Tender">
-          <rect class="mm-node-rect" x="260" y="120" width="230" height="52" rx="16" fill="#1e37a0" />
-          <text class="mm-branch-label" x="375" y="152" text-anchor="middle">Project Tender</text>
+        <a href="#svc-project-tender" class="services-nav-item">
+          <span class="services-nav-icon"><i class="fa-solid fa-file-signature"></i></span>
+          <span class="services-nav-body">
+            <span class="services-nav-title">Project Tender</span>
+            <span class="services-nav-desc">Technical quotations &amp; bidding</span>
+          </span>
+          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
         </a>
-        <rect class="mm-leaf-pill" x="260" y="200" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="375" y="218" text-anchor="middle">Competitive bids</text>
-        <rect class="mm-leaf-pill" x="260" y="236" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="375" y="254" text-anchor="middle">Dedicated support team</text>
 
-        <!-- branch: Supply & Logistics -->
-        <a href="#svc-supply-logistics" class="mm-link" aria-label="Jump to Supply and Logistics">
-          <rect class="mm-node-rect" x="505" y="120" width="230" height="52" rx="16" fill="#1e37a0" />
-          <text class="mm-branch-label" x="620" y="152" text-anchor="middle">Supply &amp; Logistics</text>
+        <a href="#svc-supply-logistics" class="services-nav-item">
+          <span class="services-nav-icon"><i class="fa-solid fa-truck-fast"></i></span>
+          <span class="services-nav-body">
+            <span class="services-nav-title">Supply &amp; Logistics</span>
+            <span class="services-nav-desc">Nationwide delivery &amp; dispatch</span>
+          </span>
+          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
         </a>
-        <rect class="mm-leaf-pill" x="505" y="200" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="620" y="218" text-anchor="middle">Invoice-matched dispatch</text>
-        <rect class="mm-leaf-pill" x="505" y="236" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="620" y="254" text-anchor="middle">On-time truck schedules</text>
 
-        <!-- branch: Projects Feasibility -->
-        <a href="#svc-projects-feasibility" class="mm-link" aria-label="Jump to Projects Feasibility">
-          <rect class="mm-node-rect" x="750" y="120" width="230" height="52" rx="16" fill="#1e37a0" />
-          <text class="mm-branch-label" x="865" y="152" text-anchor="middle">Projects Feasibility</text>
+        <a href="#svc-projects-feasibility" class="services-nav-item">
+          <span class="services-nav-icon"><i class="fa-solid fa-drafting-compass"></i></span>
+          <span class="services-nav-body">
+            <span class="services-nav-title">Projects Feasibility</span>
+            <span class="services-nav-desc">Material selection &amp; engineering support</span>
+          </span>
+          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
         </a>
-        <rect class="mm-leaf-pill" x="750" y="200" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="865" y="218" text-anchor="middle">Steel &amp; mill estimating</text>
-        <rect class="mm-leaf-pill" x="750" y="236" width="230" height="28" rx="14" />
-        <text class="mm-leaf-text" x="865" y="254" text-anchor="middle">Lead-time guidance</text>
-      </svg>
+      </div>
     </div>
 
     <div class="services-grid reveal">
 
       <div class="service-card" id="svc-counter-sales">
-        <div class="service-icon"><i class="fa-solid fa-shop"></i></div>
+        <div class="service-card-top">
+          <div class="service-icon"><i class="fa-solid fa-shop"></i></div>
+          <span class="service-index">01</span>
+        </div>
         <div class="service-copy">
           <h3>Counter Sales</h3>
           <p>You're welcome to view samples of every product line and get professional advice from our counter staff in person. Depending on the size and type of order, you can place it and pick it up the same day.</p>
         </div>
+        <a href="index.html#contact" class="service-cta">Request a quote <span class="arrow">&rarr;</span></a>
       </div>
 
       <div class="service-card" id="svc-project-tender">
-        <div class="service-icon"><i class="fa-solid fa-file-signature"></i></div>
+        <div class="service-card-top">
+          <div class="service-icon"><i class="fa-solid fa-file-signature"></i></div>
+          <span class="service-index">02</span>
+        </div>
         <div class="service-copy">
           <h3>Project Tender</h3>
           <ul class="service-list">
@@ -187,10 +167,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
             <li>Reasonable terms and conditions of supply</li>
           </ul>
         </div>
+        <a href="index.html#contact" class="service-cta">Request a quote <span class="arrow">&rarr;</span></a>
       </div>
 
       <div class="service-card" id="svc-supply-logistics">
-        <div class="service-icon"><i class="fa-solid fa-truck-fast"></i></div>
+        <div class="service-card-top">
+          <div class="service-icon"><i class="fa-solid fa-truck-fast"></i></div>
+          <span class="service-index">03</span>
+        </div>
         <div class="service-copy">
           <h3>Supply &amp; Logistics</h3>
           <ul class="service-list">
@@ -199,10 +183,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
             <li>Our own trucks' manifests organized so deliveries leave on time</li>
           </ul>
         </div>
+        <a href="index.html#contact" class="service-cta">Request a quote <span class="arrow">&rarr;</span></a>
       </div>
 
       <div class="service-card" id="svc-projects-feasibility">
-        <div class="service-icon"><i class="fa-solid fa-drafting-compass"></i></div>
+        <div class="service-card-top">
+          <div class="service-icon"><i class="fa-solid fa-drafting-compass"></i></div>
+          <span class="service-index">04</span>
+        </div>
         <div class="service-copy">
           <h3>Projects Feasibility</h3>
           <ul class="service-list">
@@ -211,6 +199,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
             <li>Guidance on mill selection and production lead times</li>
           </ul>
         </div>
+        <a href="index.html#contact" class="service-cta">Request a quote <span class="arrow">&rarr;</span></a>
       </div>
 
     </div>
