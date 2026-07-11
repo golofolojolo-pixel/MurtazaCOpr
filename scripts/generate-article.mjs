@@ -3,8 +3,13 @@
 //
 // What it does:
 //   1. Reads data/used-article-topics.json (topics already published)
-//   2. Asks Gemini for ONE new article (JSON), telling it what's already covered
-//      and restricting it to a fixed set of category names
+//   2. Asks Gemini for ONE new article's CONTENT as plain text/JSON only —
+//      title, intro, sections (heading + paragraphs + optional bullets),
+//      closing. Gemini never writes HTML; the script renders it through a
+//      fixed template (buildArticleBodyHtml) so every article gets
+//      identical paragraph/heading/list styling, and rejects the response
+//      if it looks like leftover assistant chatter ("let me know if...",
+//      "best regards", etc.) rather than publish it.
 //   3. Builds the compact row HTML + full article block in the site's existing style
 //   4. Inserts the row into the matching <div class="article-category" data-category="...">
 //      block (creating a new category block if none matches), and the full
@@ -100,14 +105,58 @@ const RESPONSE_SCHEMA = {
       type: "STRING",
       description: "1-2 sentence teaser for the preview row, plain text, no HTML, under 160 characters.",
     },
-    body_html: {
+    intro: {
       type: "STRING",
       description:
-        "The full article body as inner HTML only (no outer <div>/<html>). Use <h4 style=\"margin:24px 0 10px;font-size:17px;font-weight:600;\"> for subheadings, <p style=\"color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;\"> for paragraphs (last paragraph margin:0), and <ul class=\"stock-list\" style=\"margin:0 0 16px;\"><li>...</li></ul> for bullet lists. 500-800 words, 4-6 sections. Where relevant, link to the site's own pages using plain relative hrefs like pipes.html, fittings.html, valves.html, flanges.html, tubes.html, dairy-tubes.html, mill-test-report.html, services.html, company-profile.html, lor.html, styled as <a href=\"...\" style=\"color:var(--color-ink);text-decoration:underline;\">. Do not invent statistics, standards numbers, or certifications you are not confident about; keep claims general and accurate. Escape any literal '&' as '&amp;'.",
+        "Opening paragraph, plain text, no HTML, no markdown. 2-4 sentences introducing the topic and why it matters.",
+    },
+    sections: {
+      type: "ARRAY",
+      description: "3-5 body sections, each with a subheading and 1-2 supporting paragraphs, optionally a bullet list.",
+      items: {
+        type: "OBJECT",
+        properties: {
+          heading: { type: "STRING", description: "Short subheading, plain text, no HTML." },
+          paragraphs: {
+            type: "ARRAY",
+            items: { type: "STRING" },
+            description: "1-2 plain-text paragraphs for this section, no HTML, no markdown.",
+          },
+          bullets: {
+            type: "ARRAY",
+            items: { type: "STRING" },
+            description: "Optional: 0 or 3-5 plain-text bullet points for this section, no HTML, no markdown, no leading dashes/bullets.",
+          },
+        },
+        required: ["heading", "paragraphs"],
+      },
+    },
+    closing: {
+      type: "STRING",
+      description:
+        "Closing paragraph, plain text, no HTML, no markdown. 1-2 sentences that naturally point back to Murtaza Corporation's relevant product range.",
+    },
+    closing_link_page: {
+      type: "STRING",
+      description:
+        "One relative page filename to link from inside the closing paragraph, e.g. 'pipes.html'. Must be one of: pipes.html, fittings.html, valves.html, flanges.html, tubes.html, dairy-tubes.html, mill-test-report.html, services.html, company-profile.html, lor.html. Leave empty string if none fits naturally.",
     },
   },
-  required: ["slug", "title", "category", "read_time_minutes", "excerpt", "body_html"],
+  required: ["slug", "title", "category", "read_time_minutes", "excerpt", "intro", "sections", "closing", "closing_link_page"],
 };
+
+const VALID_LINK_PAGES = [
+  "pipes.html",
+  "fittings.html",
+  "valves.html",
+  "flanges.html",
+  "tubes.html",
+  "dairy-tubes.html",
+  "mill-test-report.html",
+  "services.html",
+  "company-profile.html",
+  "lor.html",
+];
 
 async function generateArticle(existingTopics) {
   const coveredList = existingTopics.map((t) => `- ${t.title} (${t.category})`).join("\n");
@@ -123,6 +172,8 @@ ${coveredList || "(none yet)"}
 You MUST set "category" to exactly one of: ${ALLOWED_CATEGORIES.join(", ")}.
 
 Pick ONE new, genuinely useful topic relevant to stainless/carbon steel pipes, tubes, fittings, flanges, valves, or dairy/hygienic piping. Return only real, generally accepted engineering information — do not fabricate specific standard numbers or figures you're not confident about; keep such references general if unsure.
+
+Write all text fields as PLAIN TEXT ONLY — no HTML tags, no markdown (no **, no #, no leading "-" or "*" on bullets), no leftover assistant-style phrasing ("Sure, here's...", "Let me know if...", "I hope this helps", "Best regards", sign-offs, or any mention of being an AI). Every text field is inserted directly into a fixed, pre-styled HTML template by code — do not include any markup or formatting characters yourself.
 
 Respond only with the JSON object matching the given schema.`;
 
@@ -158,7 +209,47 @@ Respond only with the JSON object matching the given schema.`;
   const match = ALLOWED_CATEGORIES.find((c) => normalizeCategory(c) === normalized);
   parsed.category = match || ALLOWED_CATEGORIES[0];
 
+  // Only allow a link page from the known-good list; drop anything else.
+  if (!VALID_LINK_PAGES.includes(parsed.closing_link_page)) {
+    parsed.closing_link_page = "";
+  }
+
+  assertNoLeakedMetaCommentary(parsed);
+
   return parsed;
+}
+
+// Reject the whole article if any text field looks like leftover
+// assistant-style chatter rather than article content. Fail loud (the
+// workflow run errors out) rather than silently publishing junk — a missed
+// week is far cheaper than an AI sign-off showing up on the live site.
+const META_COMMENTARY_PATTERNS = [
+  /\bas an ai\b/i,
+  /\bi (cannot|can't|am unable to)\b/i,
+  /\blet me know if\b/i,
+  /\bfeel free to\b/i,
+  /\bi hope this helps\b/i,
+  /\bbest regards\b/i,
+  /\bsincerely\b/i,
+  /^(sure|certainly|okay|here'?s|here is)[,.:]?\s/i,
+];
+
+function assertNoLeakedMetaCommentary(article) {
+  const allText = [
+    article.title,
+    article.excerpt,
+    article.intro,
+    article.closing,
+    ...(article.sections || []).flatMap((s) => [s.heading, ...(s.paragraphs || []), ...(s.bullets || [])]),
+  ].join("\n");
+
+  for (const pattern of META_COMMENTARY_PATTERNS) {
+    if (pattern.test(allText)) {
+      throw new Error(
+        `Generated content looks like it contains leaked assistant chatter (matched ${pattern}) — rejecting rather than publishing. Try re-running the workflow.`
+      );
+    }
+  }
 }
 
 function buildRowHtml(article, num) {
@@ -174,6 +265,58 @@ function buildRowHtml(article, num) {
 `;
 }
 
+// ---------------------------------------------------------------------
+// FIXED ARTICLE TEMPLATE
+// This is the single source of truth for article-body styling. Gemini
+// never supplies HTML — only plain text — so every article renders with
+// identical paragraph spacing, heading style, and list formatting no
+// matter what the model returns.
+// ---------------------------------------------------------------------
+const STYLE_PARAGRAPH = 'color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;';
+const STYLE_PARAGRAPH_LAST = 'color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;';
+const STYLE_HEADING = 'margin:24px 0 10px;font-size:17px;font-weight:600;';
+const STYLE_LIST = 'margin:0 0 16px;';
+const STYLE_LINK = 'color:var(--color-ink);text-decoration:underline;';
+
+function paragraphHtml(text, isLast) {
+  return `<p style="${isLast ? STYLE_PARAGRAPH_LAST : STYLE_PARAGRAPH}">${escapeHtml(text)}</p>`;
+}
+
+function bulletsHtml(items) {
+  if (!items || items.length === 0) return "";
+  const lis = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n        ");
+  return `<ul class="stock-list" style="${STYLE_LIST}">\n        ${lis}\n      </ul>`;
+}
+
+// Renders the closing paragraph with an optional inline link to one of the
+// site's own pages, appended as a trailing sentence-style link — kept
+// separate from free-text link insertion so we never trust the model to
+// hand-place an <a> tag itself.
+function closingParagraphHtml(text, linkPage) {
+  const escaped = escapeHtml(text);
+  if (!linkPage) return `<p style="${STYLE_PARAGRAPH_LAST}">${escaped}</p>`;
+  const label = linkPage.replace(/-/g, " ").replace(".html", "");
+  return `<p style="${STYLE_PARAGRAPH_LAST}">${escaped} See our <a href="${linkPage}" style="${STYLE_LINK}">${escapeHtml(label)}</a> page for more.</p>`;
+}
+
+function buildArticleBodyHtml(article) {
+  const parts = [];
+
+  parts.push(paragraphHtml(article.intro, false));
+
+  for (const section of article.sections || []) {
+    parts.push(`<h4 style="${STYLE_HEADING}">${escapeHtml(section.heading)}</h4>`);
+    const paragraphs = section.paragraphs || [];
+    paragraphs.forEach((p) => parts.push(paragraphHtml(p, false)));
+    const bullets = bulletsHtml(section.bullets);
+    if (bullets) parts.push(bullets);
+  }
+
+  parts.push(closingParagraphHtml(article.closing, article.closing_link_page));
+
+  return parts.join("\n\n      ");
+}
+
 function buildArticleHtml(article, num) {
   return `    <div id="${article.slug}" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
       <p class="eyebrow" style="margin:0 0 8px;">Article ${num} &middot; ${escapeHtml(
@@ -181,7 +324,7 @@ function buildArticleHtml(article, num) {
   )} &middot; ${article.read_time_minutes} min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">${escapeHtml(article.title)}</h3>
 
-      ${article.body_html}
+      ${buildArticleBodyHtml(article)}
 
       <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
     </div>
