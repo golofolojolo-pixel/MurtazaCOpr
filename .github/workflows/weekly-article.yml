@@ -1,0 +1,39 @@
+name: Weekly Engineering Article
+
+on:
+  schedule:
+    # Every Monday at 08:00 UTC (~1pm PKT). Edit the cron below to change day/time.
+    - cron: "0 8 * * 1"
+  workflow_dispatch: {}   # lets you also trigger it manually from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate weekly article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/generate-article.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name "murtaza-article-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add engineering-articles.html data/used-article-topics.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Add weekly engineering article: ${ARTICLE_TITLE}"
+            git push
+          fi
