@@ -21,7 +21,7 @@ const TOPICS_PATH = path.join(ROOT, "data", "used-article-topics.json");
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 // If Google renames/retires this model, update here (and nowhere else).
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
 if (!GEMINI_API_KEY) {
   console.error("Missing GEMINI_API_KEY env var.");
