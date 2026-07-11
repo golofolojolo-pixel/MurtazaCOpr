@@ -13,6 +13,51 @@
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+  /* Compact, category-grouped article index */
+  .articles-compact { display:flex; flex-direction:column; gap:36px; }
+  .article-category { min-width:0; }
+  .article-category-label {
+    display:flex; align-items:baseline; gap:10px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.09em;
+    color:#8a8a8a; margin:0 0 4px; padding-bottom:8px; border-bottom:1px solid #e5e5e5;
+  }
+  .article-category-label .count { font-weight:500; color:#bcbcbc; letter-spacing:normal; text-transform:none; }
+  .article-category-rows { display:flex; flex-direction:column; }
+  .article-row {
+    display:flex; align-items:center; gap:16px;
+    padding:13px 6px; text-decoration:none;
+    border-bottom:1px solid #ececec;
+    transition:background-color .15s ease, padding-left .15s ease;
+  }
+  .article-row:last-child { border-bottom:none; }
+  .article-row:hover { background:#fafafa; padding-left:12px; }
+  .article-row-num {
+    font-family:'Courier New', Courier, monospace; font-size:12px;
+    color:#b8b8b8; width:22px; flex-shrink:0; text-align:right;
+  }
+  .article-row-body { display:flex; flex-direction:column; gap:3px; flex:1; min-width:0; }
+  .article-row-title {
+    font-size:15px; font-weight:600; line-height:1.4;
+    color:var(--color-ink, #1a1a1a);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .article-row-excerpt {
+    font-size:13px; line-height:1.5; color:#8f8f8f;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .article-row-meta { font-size:11px; color:#b0b0b0; flex-shrink:0; white-space:nowrap; }
+  .article-row-arrow {
+    font-size:16px; color:#c8c8c8; flex-shrink:0;
+    transition:transform .15s ease, color .15s ease;
+  }
+  .article-row:hover .article-row-arrow { transform:translateX(3px); color:var(--color-ink, #1a1a1a); }
+
+  @media (max-width:640px) {
+    .article-row-excerpt { display:none; }
+    .article-row-meta { display:none; }
+  }
+</style>
 </head>
 <body>
 
@@ -94,102 +139,67 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     <!-- grid below; full write-ups go in the same order further down. -->
     <!-- ============================================================ -->
 
-    <div class="grid-3 reveal" id="articles-grid" style="scroll-margin-top:110px;">
-      <!-- AUTO-CARDS:START (script inserts new card as first child here) -->
-      <a class="card" href="#thread-standards-npt-bspt-bspp">
-        <img src="https://images.unsplash.com/photo-1581093458791-9f3113e5cbb2?q=80&w=800&auto=format&fit=crop" alt="Thread Standards Explained: NPT, BSPT, and BSPP in Piping Systems" />
-        <div class="card-body">
-          <p class="num">01.</p>
-          <h3>Thread Standards Explained: NPT, BSPT, and BSPP in Piping Systems</h3>
-          <p>A practical guide to identifying and selecting NPT, BSPT, and BSPP thread types for pipes, fittings, and valves to prevent mating errors and system leaks.</p>
-          <p class="hint">Read article &rarr;</p>
-        </div>
-      </a>
+    <!--
+      New auto-generated articles are inserted weekly. Since this is now grouped
+      by category rather than a flat grid, place each new <a class="article-row">
+      inside the matching .article-category block below (create a new category
+      block if the article introduces a new topic area).
+    -->
+    <div class="articles-compact reveal" id="articles-grid" style="scroll-margin-top:110px;">
 
-      <a class="card" href="#valve-selection-ball-gate-globe">
-        <img src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80&w=800&auto=format&fit=crop" alt="Valve Selection: Ball, Gate, and Globe Valves Explained" />
-        <div class="card-body">
-          <p class="num">02.</p>
-          <h3>Valve Selection: Ball, Gate, and Globe Valves Explained</h3>
-          <p>An engineering guide to selecting the right valve for your piping system, comparing the mechanics, advantages, and limitations of ball, gate, and globe valves.</p>
-          <p class="hint">Read article &rarr;</p>
+      <div class="article-category" data-category="Materials">
+        <p class="article-category-label">Materials <span class="count">(1)</span></p>
+        <div class="article-category-rows">
+          <!-- AUTO-CARDS:START -->
+          <a class="article-row" href="#article-304-vs-316">
+            <span class="article-row-num">01</span>
+            <span class="article-row-body">
+              <span class="article-row-title">304 vs 316 Stainless Steel: Choosing the Right Grade</span>
+              <span class="article-row-excerpt">Both grades look identical on the shelf, but the wrong choice can mean corrosion failure within months.</span>
+            </span>
+            <span class="article-row-meta">6 min read</span>
+            <span class="article-row-arrow">&rarr;</span>
+          </a>
+          <!-- AUTO-CARDS:END -->
         </div>
-      </a>
+      </div>
 
-      <a class="card" href="#flange-face-types-ff-rf-rtj">
-        <img src="https://images.unsplash.com/photo-1565043666747-69f6646db940?q=80&w=800&auto=format&fit=crop" alt="Flange Face Types: FF, RF, and RTJ Explained" />
-        <div class="card-body">
-          <p class="num">03.</p>
-          <h3>Flange Face Types: FF, RF, and RTJ Explained</h3>
-          <p>A practical engineering guide comparing Flat Face, Raised Face, and Ring Type Joint flanges, highlighting their key structural differences, pressure ratings, and application hazards.</p>
-          <p class="hint">Read article &rarr;</p>
+      <div class="article-category" data-category="Piping Design">
+        <p class="article-category-label">Piping Design <span class="count">(1)</span></p>
+        <div class="article-category-rows">
+          <a class="article-row" href="#article-pipe-schedules">
+            <span class="article-row-num">02</span>
+            <span class="article-row-body">
+              <span class="article-row-title">Pipe Schedules Explained: Picking the Right Wall Thickness</span>
+              <span class="article-row-excerpt">SCH10, SCH40, SCH80 — what the schedule number means, and how pressure and corrosion allowance decide it.</span>
+            </span>
+            <span class="article-row-meta">5 min read</span>
+            <span class="article-row-arrow">&rarr;</span>
+          </a>
         </div>
-      </a>
+      </div>
 
-      <a class="card" href="#article-304-vs-316">
-        <img src="https://images.unsplash.com/photo-1581093458791-9f3113e5cbb2?q=80&w=800&auto=format&fit=crop" alt="Stainless steel pipe stock" />
-        <div class="card-body">
-          <p class="num">04.</p>
-          <h3>304 vs 316 Stainless Steel: Choosing the Right Grade</h3>
-          <p>Both grades look identical on the shelf, but the wrong choice can mean corrosion failure within months. Here's how to pick correctly.</p>
-          <p class="hint">Read article &rarr;</p>
+      <div class="article-category" data-category="Quality & Traceability">
+        <p class="article-category-label">Quality &amp; Traceability <span class="count">(1)</span></p>
+        <div class="article-category-rows">
+          <a class="article-row" href="#article-mill-test-certificates">
+            <span class="article-row-num">03</span>
+            <span class="article-row-body">
+              <span class="article-row-title">Reading a Mill Test Certificate: 3.1 vs 3.2 Explained</span>
+              <span class="article-row-excerpt">EN 10204 gets quoted on every PO, but few buyers know what it actually guarantees.</span>
+            </span>
+            <span class="article-row-meta">5 min read</span>
+            <span class="article-row-arrow">&rarr;</span>
+          </a>
         </div>
-      </a>
+      </div>
 
-      <a class="card" href="#article-pipe-schedules">
-        <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&auto=format&fit=crop" alt="Pipe wall thickness and schedule chart" />
-        <div class="card-body">
-          <p class="num">05.</p>
-          <h3>Pipe Schedules Explained: Picking the Right Wall Thickness</h3>
-          <p>SCH10, SCH40, SCH80 — what the schedule number actually means, and how pressure, size and corrosion allowance decide it.</p>
-          <p class="hint">Read article &rarr;</p>
-        </div>
-      </a>
-
-      <a class="card" href="#article-mill-test-certificates">
-        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop" alt="Mill test certificate document review" />
-        <div class="card-body">
-          <p class="num">06.</p>
-          <h3>Reading a Mill Test Certificate: 3.1 vs 3.2 Explained</h3>
-          <p>EN 10204 gets quoted on every PO, but few buyers know what it actually guarantees. A plain-English breakdown.</p>
-          <p class="hint">Read article &rarr;</p>
-        </div>
-      </a>
-
-      <!-- AUTO-CARDS:END -->
     </div>
 
     <!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->
-    <div id="thread-standards-npt-bspt-bspp" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 01 &middot; Standards &amp; Codes &middot; 4 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Thread Standards Explained: NPT, BSPT, and BSPP in Piping Systems</h3>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Threaded connections are fundamental components in fluid transport systems, widely utilized in small-bore piping, instrumentation, and utility lines. However, selecting and matching threaded components can be complex due to the co-existence of different international standards. Using mismatched threads not only leads to catastrophic system leaks but can also damage expensive <a href="fittings.html" style="color:var(--color-ink);text-decoration:underline;">fittings</a> and <a href="valves.html" style="color:var(--color-ink);text-decoration:underline;">valves</a> during installation. Understanding the differences between NPT, BSPT, and BSPP is critical for procurement and engineering teams alike.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">NPT (National Pipe Taper)</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Mainly used in North America and widely adopted in the oil, gas, and petrochemical sectors, National Pipe Taper (NPT) is governed by ANSI/ASME B1.20.1. NPT threads have a 60-degree thread angle with flattened crests and roots. The taper on NPT threads is 1 in 16 (3/4 inch per foot), allowing the male and female threads to wedge together as they are tightened.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">This wedging action creates a metal-to-metal seal by deforming the thread form, which requires the application of a thread sealant (such as PTFE tape or jointing compound) to fill any micro-gaps and prevent spiral leakage. NPT threads are designed to seal on the thread itself, making them highly reliable for pressure systems when installed correctly.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">BSPT (British Standard Pipe Taper)</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Commonly used in Europe, Asia, and the Commonwealth countries, BSPT (also known as R-threads under ISO 7) is a tapered thread standard with key differences from NPT. BSPT threads have a 55-degree thread angle (Whitworth standard) and rounded crests and roots. Like NPT, BSPT relies on a 1 in 16 taper to achieve a seal, and also requires a thread sealant to ensure leak-tight performance.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Because of the difference in thread angle (55-degree vs 60-degree) and different thread pitches (threads per inch) on most sizes, BSPT and NPT components are completely incompatible. Forcing an NPT male thread into a BSPT female port will cause cross-threading, galling, and high leakage risks.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">BSPP (British Standard Pipe Parallel)</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">BSPP (also known as G-threads under ISO 228-1) is a parallel (straight) thread standard. Unlike NPT and BSPT, BSPP threads do not taper. Consequently, the thread itself does not create a seal. Instead, the seal is achieved at the bottom of the female port or the shoulder of the male thread using an elastomeric O-ring, bonded washer, or soft metal gasket.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">This design offers major advantages in systems requiring frequent disassembly, as it avoids the wear and tear associated with tapered thread deformation. However, because it relies on an external seal, temperature and chemical compatibility of the gasket material must be carefully selected relative to the media flowing through the <a href="pipes.html" style="color:var(--color-ink);text-decoration:underline;">pipes</a>.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Key Verification Practices for Procurement</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">To prevent costly field mismatches and project delays, engineering and procurement teams should adhere to the following inspection guidelines:</p><ul class="stock-list" style="margin:0 0 16px;"><li><strong>Pitch Gauge Verification:</strong> Always use a thread pitch gauge (55-degree vs 60-degree) to confirm the thread profile during incoming quality checks.</li><li><strong>Visual Inspection of Taper:</strong> Tapered threads (NPT/BSPT) narrow toward the end, whereas parallel threads (BSPP) maintain a uniform diameter across their entire length.</li><li><strong>Clear Documentation:</strong> Ensure that purchase orders explicitly state the standard (e.g., ASME B1.20.1 for NPT or ISO 228-1 for BSPP) rather than generic terms like "BSP" which can lead to confusion between tapered and parallel variants.</li></ul><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;">By standardizing thread specifications and verifying incoming components against international standards, industrial plants can secure leak-free operations and extend the service life of their piping assemblies.</p>``` Modern browsers, parser tools, and static site generators can easily parse this single-line, clean JSON payload. No external markdown, backslashes, or linebreaks have been introduced within the JSON body. <br> Use this inside your application without any modifications. Let me know if you need more articles. <br> (Please note: markdown formatting on top/bottom of block has been kept minimal to strictly follow system instruction limits.) Please feel free to copy the raw block. <br> Have a great time integrating this code! <br> Best regards. <br> (No other text is inside the block but this context message is outside the json string as requested). <br> (Self-correction: System prompt states 
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
-    <div id="valve-selection-ball-gate-globe" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 02 &middot; Piping Design &middot; 5 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Valve Selection: Ball, Gate, and Globe Valves Explained</h3>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Selecting the correct valve for an industrial piping system is critical for maintaining process control, safety, and system longevity. While many valve types exist, gate, ball, and globe valves form the backbone of most fluid handling operations in chemical, petrochemical, and manufacturing facilities. Each design possesses unique mechanical characteristics that dictate its suitability for specific applications. Choosing the wrong valve can lead to premature mechanical failure, line blockages, or unsafe pressure drops.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Gate Valves: Isolation and Low Pressure Drop</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Gate valves are primarily designed for isolation services, meaning they should operate fully open or fully closed. The mechanism consists of a flat or wedge-shaped gate that moves vertically into the flow stream. When fully open, the gate is completely withdrawn, offering minimal resistance to flow and resulting in a very low pressure drop across the valve. This makes them highly efficient for straight-line fluid flow where restriction is not desired.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">However, gate valves are not suited for throttling or regulating flow. When a gate valve is kept partially open, the high-velocity fluid flow causes severe vibration, leading to rapid wear of the gate and seat. Over time, this erosion prevents the valve from achieving a tight shut-off. Gate valves are typically paired with heavy-duty <a href="pipes.html" style="color:var(--color-ink);text-decoration:underline;">pipes</a> and welded <a href="fittings.html" style="color:var(--color-ink);text-decoration:underline;">fittings</a> in high-pressure, high-temperature applications where operations require infrequent cycling.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Ball Valves: Quick On/Off and Reliability</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Ball valves utilize a spherical rotary disc with a bored hole to control fluid flow. A simple quarter-turn (90 degrees) rotates the ball to fully open or close the line, enabling rapid shut-off. This fast operation, combined with excellent sealing capabilities, makes ball valves highly popular in both utility and process lines. They offer exceptional reliability and maintain tight shut-off even after years of disuse.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">These <a href="valves.html" style="color:var(--color-ink);text-decoration:underline;">valves</a> are available in full bore and reduced bore configurations. Full bore valves have an internal diameter matching the connected piping, ensuring minimal friction loss and facilitating cleaning processes like line pigging. While highly durable, the rapid closure of ball valves can cause water hammer in liquid systems, and they are generally not recommended for precise throttling due to the non-linear flow characteristics of a rotating sphere.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Globe Valves: Flow Regulation and Throttling</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Unlike gate and ball valves, globe valves are specifically designed for regulating flow and throttling fluid. The internal fluid path through a globe valve is S-shaped, forcing the medium to change direction twice. This design creates a higher pressure drop and resistance to flow, but it allows for highly precise adjustment of flow rates. The flow is regulated by a plug or disc that moves perpendicular to the valve seat, providing linear throttling characteristics.</p><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Globe valves are ideal for systems that require frequent cycling, fine-tuned flow control, and pressure regulation. However, because of the high friction loss and the torque required to close the valve against the fluid pressure, they are typically limited to smaller line sizes or systems where pressure drop is not a primary concern.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Key Selection Parameters for Procurement and Engineering</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">When selecting valves for procurement, engineering and purchasing teams must evaluate several critical factors to ensure compatibility with the system design:</p><ul class="stock-list" style="margin:0 0 16px;"><li><strong>Functionality:</strong> Determine if the valve is needed for complete isolation (gate/ball) or precise flow regulation (globe).</li><li><strong>Pressure Drop:</strong> Assess the allowable pressure drop across the line; ball and gate valves offer minimal resistance, while globe valves introduce significant pressure drop.</li><li><strong>Fluid Characteristics:</strong> High-viscosity fluids or slurries may clog the S-passages of globe valves, making ball valves or specially designed gate valves a better choice.</li><li><strong>Operating Frequency:</strong> For lines requiring constant adjustment or rapid shut-off, ball and globe valves are preferred over gate valves due to their mechanical durability under frequent cycling.</li></ul><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;">By carefully analyzing these parameters alongside system pressure and temperature ratings, procurement specialists can source the exact valve type required, minimizing downtime and avoiding costly retrofits in the field.</p>
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
-    <div id="flange-face-types-ff-rf-rtj" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 03 &middot; Piping Design &middot; 4 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Flange Face Types: FF, RF, and RTJ Explained</h3>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">In industrial piping systems, flanges serve as critical connection points between <a href="pipes.html" style="color:var(--color-ink);text-decoration:underline;">pipes</a>, <a href="valves.html" style="color:var(--color-ink);text-decoration:underline;">valves</a>, and <a href="fittings.html" style="color:var(--color-ink);text-decoration:underline;">fittings</a>. Selecting the correct flange face configuration is a fundamental design decision that directly impacts the system's sealing efficiency, safety, and longevity. The three most common flange face types—Flat Face (FF), Raised Face (RF), and Ring Type Joint (RTJ)—each offer distinct mechanical characteristics designed for specific pressure ratings, temperatures, and mating materials.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Flat Face (FF) Flanges</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Flat Face flanges feature a sealing surface that is in the same plane as the bolting circle face. Because there is no raised area, the gasket makes contact across the entire face of the flange. FF flanges are typically used in low-pressure, low-temperature applications, such as water treatment facilities or low-pressure utility lines. They are most commonly manufactured from cast iron, bronze, or ductile iron. The primary engineering reason for using an FF flange is to prevent bending stress on the flange ears when the bolts are tightened. This is particularly critical when connecting steel piping to fragile cast iron equipment like pumps and valves.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Raised Face (RF) Flanges</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Raised Face flanges are the industry standard for process piping. They feature a small raised section surrounding the bore, which concentrates the bolting force onto a smaller, localized gasket area. This concentration of force increases the sealing pressure, allowing the flange to handle significantly higher operating pressures. The height of the raised face is standardized based on the pressure class: for Class 150 and Class 300, the raised face is typically 1/16 inch (1.6 mm) high, while for Class 600 and above, it increases to 1/4 inch (6.4 mm). RF <a href="flanges.html" style="color:var(--color-ink);text-decoration:underline;">flanges</a> are compatible with a wide range of gaskets, including non-asbestos sheet gaskets and metallic spiral-wound gaskets.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Ring Type Joint (RTJ) Flanges</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">For extreme high-pressure and high-temperature services, Ring Type Joint flanges are the preferred engineering choice. RTJ flanges feature deep, concentric grooves machined directly into their faces. Instead of a flat gasket, a solid metallic ring gasket—typically oval or octagonal in cross-section—is placed in the groove. As the bolts are torqued, the metal ring deforms slightly inside the groove, creating an incredibly tight metal-to-metal seal. RTJ systems are commonly specified in petrochemical, offshore, and oil field applications where pressure classes exceed Class 600. The mechanical seal is highly resistant to thermal cycling, vibration, and system expansion.</p><h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Selection and Compatibility Hazards</h4><p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;">One of the most common errors in procurement and site assembly is the mismatching of flange faces. A critical rule in piping design is that a Raised Face steel flange should never be bolted directly to a Flat Face cast iron flange. Doing so transfers all the bolting torque to the outer edges of the cast iron flange, which often results in the cast iron fracturing. To prevent this, engineers must specify a Flat Face steel flange when mating with cast iron components. Additionally, the selected gasket must always match the specific flange face profile to ensure a reliable seal and prevent catastrophic leaks under pressure.</p>
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
     <!-- ARTICLE 1 -->
     <div id="article-304-vs-316" style="margin-top:64px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 04 &middot; Materials &middot; 6 min read</p>
+      <p class="eyebrow" style="margin:0 0 8px;">Article 01 &middot; Materials &middot; 6 min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">304 vs 316 Stainless Steel: Choosing the Right Grade</h3>
 
       <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">304 and 316 are the two grades that come up in almost every piping enquiry, and it's easy to see why they get confused — both are austenitic, both are non-magnetic in the annealed condition, and both machine, weld and polish in much the same way. The difference that matters is molybdenum: 316 contains 2–3% Mo, which 304 does not, and that single alloying addition changes where each grade belongs in a plant.</p>
@@ -215,7 +225,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
     <!-- ARTICLE 2 -->
     <div id="article-pipe-schedules" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 05 &middot; Piping Design &middot; 5 min read</p>
+      <p class="eyebrow" style="margin:0 0 8px;">Article 02 &middot; Piping Design &middot; 5 min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Pipe Schedules Explained: Picking the Right Wall Thickness</h3>
 
       <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">The "schedule" number stamped on a pipe spec — SCH10, SCH40, SCH80, SCH160 — is simply a standardized way of expressing wall thickness relative to outside diameter, as set out in ASME B36.19 (stainless) and B36.10 (carbon steel). A higher schedule number means a thicker wall for the same nominal pipe size (NPS/DN), and therefore a smaller internal bore.</p>
@@ -240,7 +250,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
     <!-- ARTICLE 3 -->
     <div id="article-mill-test-certificates" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 06 &middot; Quality &amp; Traceability &middot; 5 min read</p>
+      <p class="eyebrow" style="margin:0 0 8px;">Article 03 &middot; Quality &amp; Traceability &middot; 5 min read</p>
       <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Reading a Mill Test Certificate: 3.1 vs 3.2 Explained</h3>
 
       <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Almost every purchase order for pipe, fittings or valves asks for a "Mill Test Certificate" or "MTC," usually with a reference to EN 10204. In practice, the standard defines several inspection document types, and mixing them up can mean receiving less traceability than a project actually needs.</p>
