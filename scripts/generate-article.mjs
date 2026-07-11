@@ -15,12 +15,13 @@
 //
 // Requires: GEMINI_API_KEY env var (set as a GitHub Actions secret)
 //
-// IMPORTANT: engineering-articles.html must contain these markers for
-// insertion to work — if the page is ever redesigned again, update the
-// markers here AND in the HTML together:
-//   <!-- CATEGORIES:END -->             (end of the whole articles-compact block, for new categories)
-//   <!-- ROWS:START -->  / <!-- ROWS:END -->   (inside each .article-category-rows)
-//   <!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->
+// Row insertion is structural, not marker-based: it locates the
+// #articles-grid container and each .article-category block by counting
+// balanced <div> tags, so it works against the page as it actually exists —
+// no hand-placed comment markers required. It still relies on the literal
+// "<!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->"
+// comment for the full write-up section; if that section of the page is ever
+// redesigned, update ARTICLE_MARKER below to match.
 
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -191,46 +192,96 @@ function buildNewCategoryBlockHtml(category, rowHtml) {
   return `      <div class="article-category" data-category="${escapeHtml(category)}">
         <p class="article-category-label">${escapeHtml(category)} <span class="count">(1)</span></p>
         <div class="article-category-rows">
-          <!-- ROWS:START -->
-${rowHtml}          <!-- ROWS:END -->
-        </div>
+${rowHtml}        </div>
       </div>
 `;
+}
+
+// Structural HTML helpers — no reliance on hand-placed marker comments.
+// Given the index of the "<" of an opening <div ...> tag, returns the index
+// of the "<" of its matching closing </div>, by counting nested divs.
+function findMatchingDivClose(html, openTagStart) {
+  const tagEnd = html.indexOf(">", openTagStart);
+  if (tagEnd === -1) throw new Error("Malformed HTML: unterminated opening <div> tag.");
+  let depth = 1;
+  let pos = tagEnd + 1;
+  while (depth > 0) {
+    const nextOpen = html.indexOf("<div", pos);
+    const nextClose = html.indexOf("</div>", pos);
+    if (nextClose === -1) throw new Error("Malformed HTML: unbalanced <div> tags, no matching close found.");
+    if (nextOpen !== -1 && nextOpen < nextClose) {
+      depth++;
+      pos = nextOpen + 4;
+    } else {
+      depth--;
+      pos = nextClose + 6;
+      if (depth === 0) return nextClose;
+    }
+  }
+}
+
+function getArticlesGridContainer(html) {
+  const openMatch = html.match(/<div class="articles-compact[^"]*"[^>]*id="articles-grid"[^>]*>/);
+  if (!openMatch) {
+    throw new Error('Could not find the #articles-grid container ("articles-compact" div) — the page structure may have changed.');
+  }
+  const openStart = html.indexOf(openMatch[0]);
+  const openTagEnd = openStart + openMatch[0].length;
+  const closeStart = findMatchingDivClose(html, openStart);
+  return { openStart, openTagEnd, closeStart };
+}
+
+function findCategoryBlocks(html, gridStart, gridEnd) {
+  const blocks = [];
+  const openRe = /<div class="article-category" data-category="([^"]*)">/g;
+  openRe.lastIndex = gridStart;
+  let m;
+  while ((m = openRe.exec(html)) !== null) {
+    if (m.index >= gridEnd) break;
+    const closeStart = findMatchingDivClose(html, m.index);
+    blocks.push({ category: m[1], openStart: m.index, openTagEnd: m.index + m[0].length, closeStart });
+  }
+  return blocks;
 }
 
 function insertRow(html, article, num) {
   const rowHtml = buildRowHtml(article, num);
 
-  // Find every existing category block and check for a normalized match.
-  const categoryBlockRegex =
-    /<div class="article-category" data-category="([^"]*)">([\s\S]*?)<\/div>\s*<\/div>/g;
+  const grid = getArticlesGridContainer(html);
+  const categoryBlocks = findCategoryBlocks(html, grid.openTagEnd, grid.closeStart);
 
-  let match;
-  let target = null;
-  while ((match = categoryBlockRegex.exec(html)) !== null) {
-    if (normalizeCategory(match[1]) === normalizeCategory(article.category)) {
-      target = match;
-      break;
-    }
-  }
+  const target = categoryBlocks.find(
+    (b) => normalizeCategory(b.category) === normalizeCategory(article.category)
+  );
 
   if (target) {
-    // Insert as the first row inside this category's ROWS:START marker,
-    // and bump the displayed count.
-    const [fullBlock] = target;
-    const updatedBlock = fullBlock
-      .replace("<!-- ROWS:START -->", `<!-- ROWS:START -->\n${rowHtml}`)
-      .replace(/(<span class="count">\()(\d+)(\)<\/span>)/, (_, a, n, c) => `${a}${Number(n) + 1}${c}`);
-    return html.slice(0, target.index) + updatedBlock + html.slice(target.index + fullBlock.length);
+    // Find the .article-category-rows div inside this category block and
+    // insert the new row as its first child; bump the displayed count.
+    const rowsOpenMatch = html
+      .slice(target.openTagEnd, target.closeStart)
+      .match(/<div class="article-category-rows">/);
+    if (!rowsOpenMatch) {
+      throw new Error(`Category "${article.category}" block found, but its .article-category-rows div is missing.`);
+    }
+    const rowsOpenStart = target.openTagEnd + rowsOpenMatch.index;
+    const insertAt = rowsOpenStart + rowsOpenMatch[0].length;
+
+    let updated = html.slice(0, insertAt) + `\n${rowHtml}` + html.slice(insertAt);
+
+    // Bump the count badge — search only within this category's label (before insertAt).
+    updated = updated.replace(
+      new RegExp(
+        `(data-category="${target.category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}">[\\s\\S]*?<span class="count">\\()(\\d+)(\\)<\\/span>)`
+      ),
+      (_, a, n, c) => `${a}${Number(n) + 1}${c}`
+    );
+    return updated;
   }
 
-  // No matching category yet — create a new one, appended before CATEGORIES:END.
+  // No matching category yet — create a new one, appended as the last
+  // category block inside the grid container.
   const newBlock = buildNewCategoryBlockHtml(article.category, rowHtml);
-  const marker = "<!-- CATEGORIES:END -->";
-  if (!html.includes(marker)) {
-    throw new Error("CATEGORIES:END marker not found — cannot add a new category block.");
-  }
-  return html.replace(marker, `${newBlock}${marker}`);
+  return html.slice(0, grid.closeStart) + newBlock + html.slice(grid.closeStart);
 }
 
 async function main() {
