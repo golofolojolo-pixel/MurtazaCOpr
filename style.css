@@ -1655,9 +1655,9 @@ footer{
   stroke:#d8d4c8;stroke-width:1.5;
 }
 .mm-node{
-  fill:var(--color-canvas-white);
-  stroke:#e3e0d6;stroke-width:1.5;
-  transition:stroke .2s ease;
+  fill:var(--color-ink);
+  stroke:var(--color-ink);stroke-width:1.5;
+  transition:fill .22s ease, stroke .22s ease, stroke-width .22s ease;
 }
 .mm-node-center{
   fill:var(--color-ink);
@@ -1670,21 +1670,19 @@ footer{
 }
 .mm-link{cursor:pointer;}
 .mm-link:hover .mm-node{
-  stroke:var(--color-cobalt-ink);
-}
-.mm-link:focus-visible .mm-node{
-  outline:2px solid var(--color-cobalt-ink);outline-offset:3px;
+  fill:var(--color-canvas-white);
+  stroke:var(--color-ink);
+  stroke-width:2;
 }
 .mm-branch-label{
-  font-family:'Inter',sans-serif;font-weight:600;font-size:15px;fill:var(--color-ink);
+  font-family:'Inter',sans-serif;font-weight:600;font-size:15px;fill:#fff;
   letter-spacing:-0.01em;
   pointer-events:none;
-  transition:fill .2s ease;
+  transition:fill .22s ease;
 }
 .mm-link:hover .mm-branch-label{
-  fill:var(--color-cobalt-ink);
+  fill:var(--color-ink);
 }
-
 @media (max-width:640px){
   .services-mindmap-wrap{ overflow-x:auto; }
   .services-mindmap{ min-width:640px; }
