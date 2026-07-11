@@ -1,39 +1,257 @@
-name: Weekly Engineering Article
+// Weekly engineering article generator.
+// Run by .github/workflows/weekly-article.yml on a cron schedule.
+//
+// What it does:
+//   1. Reads data/used-article-topics.json (topics already published)
+//   2. Asks Gemini for ONE new article (JSON), telling it what's already covered
+//   3. Builds the HTML card + full article block in the site's existing style
+//   4. Inserts the card at the top of the AUTO-CARDS block, and the full
+//      article at the top of the AUTO-ARTICLES block, in engineering-articles.html
+//   5. Renumbers "01./02./03." card numbers and "Article 01/02/03" labels
+//   6. Appends the new topic to data/used-article-topics.json
+//
+// Requires: GEMINI_API_KEY env var (set as a GitHub Actions secret)
 
-on:
-  schedule:
-    # Every Monday at 08:00 UTC (~1pm PKT). Edit the cron below to change day/time.
-    - cron: "0 8 * * 1"
-  workflow_dispatch: {}   # lets you also trigger it manually from the Actions tab
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 
-permissions:
-  contents: write
+const ROOT = path.resolve(new URL(".", import.meta.url).pathname, "..");
+const HTML_PATH = path.join(ROOT, "engineering-articles.html");
+const TOPICS_PATH = path.join(ROOT, "data", "used-article-topics.json");
 
-jobs:
-  generate-article:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// If Google renames/retires this model, update here (and nowhere else).
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+if (!GEMINI_API_KEY) {
+  console.error("Missing GEMINI_API_KEY env var.");
+  process.exit(1);
+}
 
-      - name: Generate weekly article
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: node scripts/generate-article.mjs
+// A small rotating pool of relevant Unsplash photos (no API key required,
+// these are direct image URLs, same pattern already used on the page).
+const IMAGE_POOL = [
+  "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1565043666747-69f6646db940?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80&w=800&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1581093458791-9f3113e5cbb2?q=80&w=800&auto=format&fit=crop",
+];
 
-      - name: Commit and push
-        run: |
-          git config user.name "murtaza-article-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add engineering-articles.html data/used-article-topics.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Add weekly engineering article: ${ARTICLE_TITLE}"
-            git push
-          fi
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+async function loadTopics() {
+  try {
+    const raw = await readFile(TOPICS_PATH, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+async function saveTopics(topics) {
+  await writeFile(TOPICS_PATH, JSON.stringify(topics, null, 2) + "\n", "utf8");
+}
+
+// Structured output schema — Gemini returns exactly this shape as JSON.
+const RESPONSE_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    slug: {
+      type: "STRING",
+      description:
+        "kebab-case id, e.g. 'welding-stainless-steel'. Must be unique, no spaces, no punctuation besides hyphens.",
+    },
+    title: { type: "STRING", description: "Article title, plain text, no HTML." },
+    category: {
+      type: "STRING",
+      description:
+        "Short category label, e.g. 'Materials', 'Piping Design', 'Fabrication', 'Corrosion', 'Standards & Codes', 'Quality & Traceability'.",
+    },
+    read_time_minutes: { type: "INTEGER" },
+    excerpt: {
+      type: "STRING",
+      description: "1-2 sentence teaser for the preview card, plain text, no HTML, under 200 characters.",
+    },
+    body_html: {
+      type: "STRING",
+      description:
+        "The full article body as inner HTML only (no outer <div>/<html>). Use <h4 style=\"margin:24px 0 10px;font-size:17px;font-weight:600;\"> for subheadings, <p style=\"color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;\"> for paragraphs (last paragraph margin:0), and <ul class=\"stock-list\" style=\"margin:0 0 16px;\"><li>...</li></ul> for bullet lists. IMPORTANT: keep the TOTAL length to 350-500 words across 3-4 short sections — brevity is required, do not exceed this. Where relevant, link to the site's own pages using plain relative hrefs like pipes.html, fittings.html, valves.html, flanges.html, tubes.html, dairy-tubes.html, mill-test-report.html, services.html, company-profile.html, lor.html, styled as <a href=\"...\" style=\"color:var(--color-ink);text-decoration:underline;\">. Do not invent statistics, standards numbers, or certifications you are not confident about; keep claims general and accurate. Escape any literal '&' as '&amp;'.",
+    },
+  },
+  required: ["slug", "title", "category", "read_time_minutes", "excerpt", "body_html"],
+};
+
+async function generateArticle(existingTopics) {
+  const coveredList = existingTopics
+    .map((t) => `- ${t.title} (${t.category})`)
+    .join("\n");
+
+  const prompt = `You are writing one new engineering article for the "Engineering Articles" page of Murtaza Corporation, a Karachi, Pakistan-based stainless steel & carbon steel pipe, tube, fitting, flange and valve distributor/stockist.
+
+Audience: engineers, procurement staff, and contractors who buy piping materials.
+Tone: practical, precise, no marketing fluff, matches an established engineering reference article.
+
+Topics already published (do NOT repeat these or anything essentially the same):
+${coveredList || "(none yet)"}
+
+Pick ONE new, genuinely useful topic relevant to stainless/carbon steel pipes, tubes, fittings, flanges, valves, or dairy/hygienic piping — e.g. flange face types, valve selection (gate vs ball vs check), welding stainless steel, passivation, PMI testing, duplex steels, pipe supports, NDT methods, thread standards, gasket selection, or similar. Return only real, generally accepted engineering information — do not fabricate specific standard numbers or figures you're not confident about; keep such references general if unsure.
+
+Respond only with the JSON object matching the given schema.`;
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+        temperature: 0.8,
+        maxOutputTokens: 4096,
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Gemini API error ${res.status}: ${errText}`);
+  }
+
+  const data = await res.json();
+  const candidate = data?.candidates?.[0];
+  const text = candidate?.content?.parts?.[0]?.text;
+
+  if (!text) throw new Error("Gemini returned no content: " + JSON.stringify(data));
+
+  if (candidate.finishReason === "MAX_TOKENS") {
+    throw new Error(
+      "Gemini's response was cut off before it finished (hit the token limit). " +
+        "The article was likely too long — try lowering the word-count target in the prompt, " +
+        "or raise maxOutputTokens in generate-article.mjs. " +
+        `Received ${text.length} characters before truncation.`
+    );
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error(
+      `Failed to parse Gemini's response as JSON (finishReason: ${candidate.finishReason}). ` +
+        `Response length: ${text.length} chars. First 300 chars: ${text.slice(0, 300)} ` +
+        `Last 300 chars: ${text.slice(-300)}`
+    );
+  }
+}
+
+function buildCardHtml(article, imageUrl, num) {
+  return `      <a class="card" href="#${article.slug}">
+        <img src="${imageUrl}" alt="${escapeHtml(article.title)}" />
+        <div class="card-body">
+          <p class="num">${num}</p>
+          <h3>${escapeHtml(article.title)}</h3>
+          <p>${escapeHtml(article.excerpt)}</p>
+          <p class="hint">Read article &rarr;</p>
+        </div>
+      </a>
+`;
+}
+
+function buildArticleHtml(article, num) {
+  return `    <div id="${article.slug}" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
+      <p class="eyebrow" style="margin:0 0 8px;">Article ${num} &middot; ${escapeHtml(
+    article.category
+  )} &middot; ${article.read_time_minutes} min read</p>
+      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">${escapeHtml(article.title)}</h3>
+
+      ${article.body_html}
+
+      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
+    </div>
+`;
+}
+
+function renumber(html) {
+  // Renumber card numbers 01., 02., 03"... in document order within AUTO-CARDS block
+  let cardIndex = 0;
+  html = html.replace(/<p class="num">\d+\.<\/p>/g, () => {
+    cardIndex += 1;
+    return `<p class="num">${String(cardIndex).padStart(2, "0")}.</p>`;
+  });
+
+  // Renumber "Article 01 &middot;" labels in document order
+  let articleIndex = 0;
+  html = html.replace(/Article \d+ &middot;/g, () => {
+    articleIndex += 1;
+    return `Article ${String(articleIndex).padStart(2, "0")} &middot;`;
+  });
+
+  return html;
+}
+
+async function main() {
+  const topics = await loadTopics();
+  const article = await generateArticle(topics);
+
+  // Guard against a duplicate/collided slug
+  if (topics.some((t) => t.slug === article.slug)) {
+    article.slug = `${article.slug}-${Date.now().toString(36)}`;
+  }
+
+  const html = await readFile(HTML_PATH, "utf8");
+
+  const image = IMAGE_POOL[topics.length % IMAGE_POOL.length];
+  const cardHtml = buildCardHtml(article, image, "00."); // temp number, fixed by renumber()
+  const articleHtml = buildArticleHtml(article, "00");
+
+  let updated = html.replace(
+    "<!-- AUTO-CARDS:START (script inserts new card as first child here) -->",
+    `<!-- AUTO-CARDS:START (script inserts new card as first child here) -->\n${cardHtml}`
+  );
+
+  updated = updated.replace(
+    "<!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->",
+    `<!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->\n${articleHtml}`
+  );
+
+  if (updated === html) {
+    throw new Error("Insertion markers not found — engineering-articles.html may have been restructured.");
+  }
+
+  updated = renumber(updated);
+
+  await writeFile(HTML_PATH, updated, "utf8");
+
+  topics.push({
+    slug: article.slug,
+    title: article.title,
+    category: article.category,
+    date_added: new Date().toISOString().slice(0, 10),
+  });
+  await saveTopics(topics);
+
+  // Expose the title to the workflow for the commit message
+  if (process.env.GITHUB_ENV) {
+    await writeFile(
+      process.env.GITHUB_ENV,
+      `ARTICLE_TITLE=${article.title.replace(/\n/g, " ")}\n`,
+      { flag: "a" }
+    );
+  }
+
+  console.log(`Added article: ${article.title} (${article.slug})`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
