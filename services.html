@@ -96,47 +96,48 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
       <p>Murtaza Corporation is driven by continuous improvement and a strong customer focus &mdash; aiming to be a leader in giving our customers excellent value, top-quality products, and outstanding service at every stage of the order.</p>
     </div>
 
-    <div class="services-nav-wrap reveal">
+    <div class="services-mindmap-wrap reveal">
       <p class="eyebrow">Our Services</p>
-      <p class="services-nav-caption">Four services, one order &mdash; jump straight to what you need.</p>
+      <p class="services-mindmap-caption">Four services, one order &mdash; click any branch to jump straight to it.</p>
 
-      <div class="services-nav-grid">
-        <a href="#svc-counter-sales" class="services-nav-item">
-          <span class="services-nav-icon"><i class="fa-solid fa-shop"></i></span>
-          <span class="services-nav-body">
-            <span class="services-nav-title">Counter Sales</span>
-            <span class="services-nav-desc">Professional walk-in assistance</span>
-          </span>
-          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+      <svg class="services-mindmap" viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of Murtaza Corporation's four services: Counter Sales, Project Tender, Supply and Logistics, and Projects Feasibility">
+
+        <!-- connecting paths -->
+        <path class="mm-path" d="M500,70 C500,100 130,85 130,120" />
+        <path class="mm-path" d="M500,70 C500,95 375,90 375,120" />
+        <path class="mm-path" d="M500,70 C500,95 620,90 620,120" />
+        <path class="mm-path" d="M500,70 C500,100 865,85 865,120" />
+
+        <!-- center node -->
+        <g>
+          <rect class="mm-node-rect mm-node-center" x="400" y="14" width="200" height="56" rx="12" />
+          <text class="mm-center-label" x="500" y="48" text-anchor="middle">Our Services</text>
+        </g>
+
+        <!-- branch: Counter Sales -->
+        <a href="#svc-counter-sales" class="mm-link" aria-label="Jump to Counter Sales">
+          <rect class="mm-node-rect" x="15" y="120" width="230" height="56" rx="12" />
+          <text class="mm-branch-label" x="130" y="153" text-anchor="middle">Counter Sales</text>
         </a>
 
-        <a href="#svc-project-tender" class="services-nav-item">
-          <span class="services-nav-icon"><i class="fa-solid fa-file-signature"></i></span>
-          <span class="services-nav-body">
-            <span class="services-nav-title">Project Tender</span>
-            <span class="services-nav-desc">Technical quotations &amp; bidding</span>
-          </span>
-          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+        <!-- branch: Project Tender -->
+        <a href="#svc-project-tender" class="mm-link" aria-label="Jump to Project Tender">
+          <rect class="mm-node-rect" x="260" y="120" width="230" height="56" rx="12" />
+          <text class="mm-branch-label" x="375" y="153" text-anchor="middle">Project Tender</text>
         </a>
 
-        <a href="#svc-supply-logistics" class="services-nav-item">
-          <span class="services-nav-icon"><i class="fa-solid fa-truck-fast"></i></span>
-          <span class="services-nav-body">
-            <span class="services-nav-title">Supply &amp; Logistics</span>
-            <span class="services-nav-desc">Nationwide delivery &amp; dispatch</span>
-          </span>
-          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+        <!-- branch: Supply & Logistics -->
+        <a href="#svc-supply-logistics" class="mm-link" aria-label="Jump to Supply and Logistics">
+          <rect class="mm-node-rect" x="505" y="120" width="230" height="56" rx="12" />
+          <text class="mm-branch-label" x="620" y="153" text-anchor="middle">Supply &amp; Logistics</text>
         </a>
 
-        <a href="#svc-projects-feasibility" class="services-nav-item">
-          <span class="services-nav-icon"><i class="fa-solid fa-drafting-compass"></i></span>
-          <span class="services-nav-body">
-            <span class="services-nav-title">Projects Feasibility</span>
-            <span class="services-nav-desc">Material selection &amp; engineering support</span>
-          </span>
-          <span class="services-nav-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+        <!-- branch: Projects Feasibility -->
+        <a href="#svc-projects-feasibility" class="mm-link" aria-label="Jump to Projects Feasibility">
+          <rect class="mm-node-rect" x="750" y="120" width="230" height="56" rx="12" />
+          <text class="mm-branch-label" x="865" y="153" text-anchor="middle">Projects Feasibility</text>
         </a>
-      </div>
+      </svg>
     </div>
 
     <div class="services-grid reveal">
