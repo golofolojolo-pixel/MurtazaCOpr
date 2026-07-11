@@ -2015,3 +2015,54 @@ footer{
 @media (prefers-reduced-motion: reduce){
   .carousel-slide{transition:none;}
 }
+
+/* ---------- Project gallery pagination (page-select circles) ---------- */
+.project-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  margin-top:48px;
+}
+.page-dot{
+  flex:0 0 auto;
+  width:38px;height:38px;
+  border-radius:50%;
+  border:1.5px solid var(--color-ash);
+  background:var(--color-canvas-white);
+  color:var(--color-stone);
+  font-family:var(--font-lunar);
+  font-size:14px;font-weight:600;letter-spacing:-0.01em;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .2s ease, border-color .2s ease, color .2s ease, transform .12s ease;
+}
+.page-dot:hover{
+  border-color:var(--color-cobalt-ink);
+  color:var(--color-cobalt-ink);
+}
+.page-dot.is-active{
+  background:var(--color-cobalt-ink);
+  border-color:var(--color-cobalt-ink);
+  color:#fff;
+}
+.page-dot:active,
+.page-dot.pressed{
+  transform:scale(.88);
+}
+.page-dot:focus-visible{
+  outline:2px solid var(--color-cobalt-ink);outline-offset:2px;
+}
+
+/* Project pages: fade/lift in when switched */
+.project-page{
+  animation:projectPageIn .4s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes projectPageIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@media (prefers-reduced-motion: reduce){
+  .project-page{animation:none;}
+}
