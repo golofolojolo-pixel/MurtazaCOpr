@@ -31,17 +31,21 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     transition:background-color .15s ease, padding-left .15s ease;
   }
   .article-row:last-child { border-bottom:none; }
-  .article-row:hover { background:#fafafa; padding-left:12px; }
+  .article-row:hover { background:#f3f5fb; padding-left:12px; }
   .article-row-num {
     font-family:'Courier New', Courier, monospace; font-size:12px;
     color:#b8b8b8; width:22px; flex-shrink:0; text-align:right;
+    transition:color .15s ease;
   }
+  .article-row:hover .article-row-num { color:var(--color-cobalt-ink, #1e37a0); }
   .article-row-body { display:flex; flex-direction:column; gap:3px; flex:1; min-width:0; }
   .article-row-title {
     font-size:15px; font-weight:600; line-height:1.4;
     color:var(--color-ink, #1a1a1a);
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    transition:color .15s ease;
   }
+  .article-row:hover .article-row-title { color:var(--color-cobalt-ink, #1e37a0); }
   .article-row-excerpt {
     font-size:13px; line-height:1.5; color:#8f8f8f;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -51,7 +55,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     font-size:16px; color:#c8c8c8; flex-shrink:0;
     transition:transform .15s ease, color .15s ease;
   }
-  .article-row:hover .article-row-arrow { transform:translateX(3px); color:var(--color-ink, #1a1a1a); }
+  .article-row:hover .article-row-arrow { transform:translateX(3px); color:var(--color-cobalt-ink, #1e37a0); }
 
   @media (max-width:640px) {
     .article-row-excerpt { display:none; }
@@ -194,21 +198,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         </div>
       </div>
 
-          <div class="article-category" data-category="Corrosion Prevention">
-        <p class="article-category-label">Corrosion Prevention <span class="count">(1)</span></p>
-        <div class="article-category-rows">
-          <a class="article-row" href="#galvanic-corrosion-piping-prevention">
-            <span class="article-row-num">10</span>
-            <span class="article-row-body">
-              <span class="article-row-title">Galvanic Corrosion in Piping Systems: Prevention and Material Selection</span>
-              <span class="article-row-excerpt">Learn how galvanic corrosion occurs when dissimilar metals meet in piping systems and discover the best engineering practices to prevent joint failures.</span>
-            </span>
-            <span class="article-row-meta">5 min read</span>
-            <span class="article-row-arrow">&rarr;</span>
-          </a>
-        </div>
-      </div>
-</div>
+    </div>
 
     <!--
       ============================================================
@@ -279,49 +269,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     </template>
 
     <!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->
-    <div id="galvanic-corrosion-piping-prevention" style="margin-top:56px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
-      <p class="eyebrow" style="margin:0 0 8px;">Article 10 &middot; Corrosion Prevention &middot; 5 min read</p>
-      <h3 style="font-size:26px;font-weight:600;margin:0 0 20px;">Galvanic Corrosion in Piping Systems: Prevention and Material Selection</h3>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">In industrial and commercial piping networks, mixing different metals is often necessary due to budget constraints, physical requirements, or retrofitting needs. However, joining dissimilar metals like carbon steel and stainless steel without proper isolation can trigger galvanic corrosion, leading to premature joint failure and costly leaks. Understanding the mechanics of this electrochemical process is essential for ensuring long-term piping integrity.</p>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">The Mechanism of Galvanic Corrosion</h4>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Galvanic corrosion is an electrochemical process that occurs when two dissimilar metals are physically connected in the presence of a conductive fluid, known as an electrolyte. In this setup, one metal becomes the anode and corrodes at an accelerated rate, while the other becomes the cathode and remains protected.</p>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">The rate of corrosion depends heavily on the electrical potential difference between the two metals in the galvanic series, as well as the conductivity of the fluid. The wider the gap between the two metals on the series chart, the faster the anodic metal will deteriorate.</p>
-
-      <ul class="stock-list" style="margin:0 0 16px;">
-        <li>Anodic metal experiences accelerated degradation and material loss</li>
-        <li>Cathodic metal receives protection and experiences reduced corrosion</li>
-        <li>Electrolyte presence is required to complete the electrical circuit</li>
-        <li>Potential difference between the materials drives the corrosion speed</li>
-      </ul>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Common Dissimilar Metal Pairs in Piping</h4>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">In industrial piping, galvanic couples frequently occur at connections between carbon steel and stainless steel, or copper-based alloys and steel. Because stainless steel sits higher on the noble end of the galvanic series compared to carbon steel, the carbon steel component acts as the anode and undergoes rapid localized corrosion.</p>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">This is particularly problematic in threaded joints or flange connections where the wall thickness is already reduced. If left unaddressed, the thread profile can completely degrade, causing catastrophic joint blowouts and fluid containment failures.</p>
-
-      <h4 style="margin:24px 0 10px;font-size:17px;font-weight:600;">Prevention Strategies and Isolation Techniques</h4>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Preventing galvanic corrosion requires breaking the electrical path between the dissimilar metals or eliminating the electrolyte. Engineers achieve this by using specialized isolation fittings, non-conductive gaskets, and protective coatings.</p>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0 0 16px;">Properly selecting and installing these components ensures that the electrical circuit is never completed, even when the piping carries highly conductive fluids like saltwater, acids, or untreated industrial wastewater.</p>
-
-      <ul class="stock-list" style="margin:0 0 16px;">
-        <li>Dielectric unions block electrical currents between threaded connections</li>
-        <li>Flange isolation kits utilize non-conductive sleeves, washers, and gaskets</li>
-        <li>Sacrificial anodes can be introduced to corrode preferentially</li>
-        <li>Protective internal coatings shield the metal from the electrolyte</li>
-      </ul>
-
-      <p style="color:var(--color-ink);font-size:16px;line-height:1.75;margin:0;">At Murtaza Corporation, we supply a comprehensive inventory of carbon steel and stainless steel materials, along with the technical expertise to help you design corrosion-resistant systems. Explore our range of high-quality flanges and isolation solutions to safeguard your next piping project. See our <a href="flanges.html" style="color:var(--color-ink);text-decoration:underline;">flanges</a> page for more.</p>
-
-      <a href="#articles-grid" class="btn btn-ghost btn-sm" style="margin-top:24px;">&uarr; Back to articles</a>
-    </div>
-
     <!-- ARTICLE 1 -->
     <div id="article-304-vs-316" style="margin-top:64px;padding-top:24px;border-top:1px solid #ececec;scroll-margin-top:110px;">
       <p class="eyebrow" style="margin:0 0 8px;">Article 01 &middot; Materials &middot; 6 min read</p>
