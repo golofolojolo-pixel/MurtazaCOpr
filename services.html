@@ -100,42 +100,37 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
       <p class="eyebrow">Our Services</p>
       <p class="services-mindmap-caption">Four services, one order &mdash; click any branch to jump straight to it.</p>
 
-      <svg class="services-mindmap" viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of Murtaza Corporation's four services: Counter Sales, Project Tender, Supply and Logistics, and Projects Feasibility">
+      <svg class="services-mindmap" viewBox="0 0 1000 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram of Murtaza Corporation's four services: Counter Sales, Project Tender, Supply and Logistics, and Projects Feasibility">
 
-        <!-- connecting paths -->
-        <path class="mm-path" d="M500,70 C500,100 130,85 130,120" />
-        <path class="mm-path" d="M500,70 C500,95 375,90 375,120" />
-        <path class="mm-path" d="M500,70 C500,95 620,90 620,120" />
-        <path class="mm-path" d="M500,70 C500,100 865,85 865,120" />
+        <!-- connecting lines -->
+        <line class="mm-line" x1="500" y1="70" x2="130" y2="110" />
+        <line class="mm-line" x1="500" y1="70" x2="375" y2="110" />
+        <line class="mm-line" x1="500" y1="70" x2="620" y2="110" />
+        <line class="mm-line" x1="500" y1="70" x2="865" y2="110" />
 
         <!-- center node -->
-        <g>
-          <rect class="mm-node-rect mm-node-center" x="400" y="14" width="200" height="56" rx="12" />
-          <text class="mm-center-label" x="500" y="48" text-anchor="middle">Our Services</text>
-        </g>
+        <rect class="mm-node mm-node-center" x="400" y="14" width="200" height="52" rx="8" />
+        <text class="mm-center-label" x="500" y="45" text-anchor="middle">Our Services</text>
 
-        <!-- branch: Counter Sales -->
+        <!-- branches -->
         <a href="#svc-counter-sales" class="mm-link" aria-label="Jump to Counter Sales">
-          <rect class="mm-node-rect" x="15" y="120" width="230" height="56" rx="12" />
-          <text class="mm-branch-label" x="130" y="153" text-anchor="middle">Counter Sales</text>
+          <rect class="mm-node" x="15" y="110" width="230" height="52" rx="8" />
+          <text class="mm-branch-label" x="130" y="141" text-anchor="middle">Counter Sales</text>
         </a>
 
-        <!-- branch: Project Tender -->
         <a href="#svc-project-tender" class="mm-link" aria-label="Jump to Project Tender">
-          <rect class="mm-node-rect" x="260" y="120" width="230" height="56" rx="12" />
-          <text class="mm-branch-label" x="375" y="153" text-anchor="middle">Project Tender</text>
+          <rect class="mm-node" x="260" y="110" width="230" height="52" rx="8" />
+          <text class="mm-branch-label" x="375" y="141" text-anchor="middle">Project Tender</text>
         </a>
 
-        <!-- branch: Supply & Logistics -->
         <a href="#svc-supply-logistics" class="mm-link" aria-label="Jump to Supply and Logistics">
-          <rect class="mm-node-rect" x="505" y="120" width="230" height="56" rx="12" />
-          <text class="mm-branch-label" x="620" y="153" text-anchor="middle">Supply &amp; Logistics</text>
+          <rect class="mm-node" x="505" y="110" width="230" height="52" rx="8" />
+          <text class="mm-branch-label" x="620" y="141" text-anchor="middle">Supply &amp; Logistics</text>
         </a>
 
-        <!-- branch: Projects Feasibility -->
         <a href="#svc-projects-feasibility" class="mm-link" aria-label="Jump to Projects Feasibility">
-          <rect class="mm-node-rect" x="750" y="120" width="230" height="56" rx="12" />
-          <text class="mm-branch-label" x="865" y="153" text-anchor="middle">Projects Feasibility</text>
+          <rect class="mm-node" x="750" y="110" width="230" height="52" rx="8" />
+          <text class="mm-branch-label" x="865" y="141" text-anchor="middle">Projects Feasibility</text>
         </a>
       </svg>
     </div>
