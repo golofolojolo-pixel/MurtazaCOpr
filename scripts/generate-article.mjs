@@ -4,13 +4,23 @@
 // What it does:
 //   1. Reads data/used-article-topics.json (topics already published)
 //   2. Asks Gemini for ONE new article (JSON), telling it what's already covered
-//   3. Builds the HTML card + full article block in the site's existing style
-//   4. Inserts the card at the top of the AUTO-CARDS block, and the full
-//      article at the top of the AUTO-ARTICLES block, in engineering-articles.html
-//   5. Renumbers "01./02./03." card numbers and "Article 01/02/03" labels
+//      and restricting it to a fixed set of category names
+//   3. Builds the compact row HTML + full article block in the site's existing style
+//   4. Inserts the row into the matching <div class="article-category" data-category="...">
+//      block (creating a new category block if none matches), and the full
+//      article at the top of the AUTO-ARTICLES block
+//   5. Assigns each article a permanent, never-renumbered display number
+//      (equal to its position in used-article-topics.json at publish time)
 //   6. Appends the new topic to data/used-article-topics.json
 //
 // Requires: GEMINI_API_KEY env var (set as a GitHub Actions secret)
+//
+// IMPORTANT: engineering-articles.html must contain these markers for
+// insertion to work — if the page is ever redesigned again, update the
+// markers here AND in the HTML together:
+//   <!-- CATEGORIES:END -->             (end of the whole articles-compact block, for new categories)
+//   <!-- ROWS:START -->  / <!-- ROWS:END -->   (inside each .article-category-rows)
+//   <!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->
 
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -20,7 +30,6 @@ const HTML_PATH = path.join(ROOT, "engineering-articles.html");
 const TOPICS_PATH = path.join(ROOT, "data", "used-article-topics.json");
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-// If Google renames/retires this model, update here (and nowhere else).
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
 if (!GEMINI_API_KEY) {
@@ -28,15 +37,17 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
-// A small rotating pool of relevant Unsplash photos (no API key required,
-// these are direct image URLs, same pattern already used on the page).
-const IMAGE_POOL = [
-  "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?q=80&w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1565043666747-69f6646db940?q=80&w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?q=80&w=800&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1581093458791-9f3113e5cbb2?q=80&w=800&auto=format&fit=crop",
+// Fixed, closed list of categories. Gemini MUST pick one of these — this is
+// what stops category-name drift (e.g. "Standards & Codes" vs "Standards &amp; Codes"
+// vs "Standards and Codes" all being treated as different groups).
+const ALLOWED_CATEGORIES = [
+  "Materials",
+  "Piping Design",
+  "Quality & Traceability",
+  "Standards & Codes",
+  "Fabrication",
+  "Corrosion Prevention",
+  "Valves & Flow Control",
 ];
 
 function escapeHtml(str) {
@@ -45,6 +56,15 @@ function escapeHtml(str) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
+}
+
+// Treat "&" and "&amp;" (and stray whitespace/case) as the same category.
+function normalizeCategory(str) {
+  return String(str)
+    .replaceAll("&amp;", "&")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
 async function loadTopics() {
@@ -60,7 +80,6 @@ async function saveTopics(topics) {
   await writeFile(TOPICS_PATH, JSON.stringify(topics, null, 2) + "\n", "utf8");
 }
 
-// Structured output schema — Gemini returns exactly this shape as JSON.
 const RESPONSE_SCHEMA = {
   type: "OBJECT",
   properties: {
@@ -73,12 +92,12 @@ const RESPONSE_SCHEMA = {
     category: {
       type: "STRING",
       description:
-        "Short category label, e.g. 'Materials', 'Piping Design', 'Fabrication', 'Corrosion', 'Standards & Codes', 'Quality & Traceability'.",
+        `Must be EXACTLY one of these strings, character for character: ${ALLOWED_CATEGORIES.map((c) => `"${c}"`).join(", ")}. Do not invent a new category and do not use HTML entities.`,
     },
     read_time_minutes: { type: "INTEGER" },
     excerpt: {
       type: "STRING",
-      description: "1-2 sentence teaser for the preview card, plain text, no HTML, under 200 characters.",
+      description: "1-2 sentence teaser for the preview row, plain text, no HTML, under 160 characters.",
     },
     body_html: {
       type: "STRING",
@@ -90,9 +109,7 @@ const RESPONSE_SCHEMA = {
 };
 
 async function generateArticle(existingTopics) {
-  const coveredList = existingTopics
-    .map((t) => `- ${t.title} (${t.category})`)
-    .join("\n");
+  const coveredList = existingTopics.map((t) => `- ${t.title} (${t.category})`).join("\n");
 
   const prompt = `You are writing one new engineering article for the "Engineering Articles" page of Murtaza Corporation, a Karachi, Pakistan-based stainless steel & carbon steel pipe, tube, fitting, flange and valve distributor/stockist.
 
@@ -102,7 +119,9 @@ Tone: practical, precise, no marketing fluff, matches an established engineering
 Topics already published (do NOT repeat these or anything essentially the same):
 ${coveredList || "(none yet)"}
 
-Pick ONE new, genuinely useful topic relevant to stainless/carbon steel pipes, tubes, fittings, flanges, valves, or dairy/hygienic piping — e.g. flange face types, valve selection (gate vs ball vs check), welding stainless steel, passivation, PMI testing, duplex steels, pipe supports, NDT methods, thread standards, gasket selection, or similar. Return only real, generally accepted engineering information — do not fabricate specific standard numbers or figures you're not confident about; keep such references general if unsure.
+You MUST set "category" to exactly one of: ${ALLOWED_CATEGORIES.join(", ")}.
+
+Pick ONE new, genuinely useful topic relevant to stainless/carbon steel pipes, tubes, fittings, flanges, valves, or dairy/hygienic piping. Return only real, generally accepted engineering information — do not fabricate specific standard numbers or figures you're not confident about; keep such references general if unsure.
 
 Respond only with the JSON object matching the given schema.`;
 
@@ -130,19 +149,27 @@ Respond only with the JSON object matching the given schema.`;
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error("Gemini returned no content: " + JSON.stringify(data));
 
-  return JSON.parse(text);
+  const parsed = JSON.parse(text);
+
+  // Belt-and-suspenders: coerce whatever Gemini returned to the closest
+  // allowed category rather than trusting it blindly.
+  const normalized = normalizeCategory(parsed.category);
+  const match = ALLOWED_CATEGORIES.find((c) => normalizeCategory(c) === normalized);
+  parsed.category = match || ALLOWED_CATEGORIES[0];
+
+  return parsed;
 }
 
-function buildCardHtml(article, imageUrl, num) {
-  return `      <a class="card" href="#${article.slug}">
-        <img src="${imageUrl}" alt="${escapeHtml(article.title)}" />
-        <div class="card-body">
-          <p class="num">${num}</p>
-          <h3>${escapeHtml(article.title)}</h3>
-          <p>${escapeHtml(article.excerpt)}</p>
-          <p class="hint">Read article &rarr;</p>
-        </div>
-      </a>
+function buildRowHtml(article, num) {
+  return `          <a class="article-row" href="#${article.slug}">
+            <span class="article-row-num">${num}</span>
+            <span class="article-row-body">
+              <span class="article-row-title">${escapeHtml(article.title)}</span>
+              <span class="article-row-excerpt">${escapeHtml(article.excerpt)}</span>
+            </span>
+            <span class="article-row-meta">${article.read_time_minutes} min read</span>
+            <span class="article-row-arrow">&rarr;</span>
+          </a>
 `;
 }
 
@@ -160,66 +187,85 @@ function buildArticleHtml(article, num) {
 `;
 }
 
-function renumber(html) {
-  // Renumber card numbers 01., 02., 03"... in document order within AUTO-CARDS block
-  let cardIndex = 0;
-  html = html.replace(/<p class="num">\d+\.<\/p>/g, () => {
-    cardIndex += 1;
-    return `<p class="num">${String(cardIndex).padStart(2, "0")}.</p>`;
-  });
+function buildNewCategoryBlockHtml(category, rowHtml) {
+  return `      <div class="article-category" data-category="${escapeHtml(category)}">
+        <p class="article-category-label">${escapeHtml(category)} <span class="count">(1)</span></p>
+        <div class="article-category-rows">
+          <!-- ROWS:START -->
+${rowHtml}          <!-- ROWS:END -->
+        </div>
+      </div>
+`;
+}
 
-  // Renumber "Article 01 &middot;" labels in document order
-  let articleIndex = 0;
-  html = html.replace(/Article \d+ &middot;/g, () => {
-    articleIndex += 1;
-    return `Article ${String(articleIndex).padStart(2, "0")} &middot;`;
-  });
+function insertRow(html, article, num) {
+  const rowHtml = buildRowHtml(article, num);
 
-  return html;
+  // Find every existing category block and check for a normalized match.
+  const categoryBlockRegex =
+    /<div class="article-category" data-category="([^"]*)">([\s\S]*?)<\/div>\s*<\/div>/g;
+
+  let match;
+  let target = null;
+  while ((match = categoryBlockRegex.exec(html)) !== null) {
+    if (normalizeCategory(match[1]) === normalizeCategory(article.category)) {
+      target = match;
+      break;
+    }
+  }
+
+  if (target) {
+    // Insert as the first row inside this category's ROWS:START marker,
+    // and bump the displayed count.
+    const [fullBlock] = target;
+    const updatedBlock = fullBlock
+      .replace("<!-- ROWS:START -->", `<!-- ROWS:START -->\n${rowHtml}`)
+      .replace(/(<span class="count">\()(\d+)(\)<\/span>)/, (_, a, n, c) => `${a}${Number(n) + 1}${c}`);
+    return html.slice(0, target.index) + updatedBlock + html.slice(target.index + fullBlock.length);
+  }
+
+  // No matching category yet — create a new one, appended before CATEGORIES:END.
+  const newBlock = buildNewCategoryBlockHtml(article.category, rowHtml);
+  const marker = "<!-- CATEGORIES:END -->";
+  if (!html.includes(marker)) {
+    throw new Error("CATEGORIES:END marker not found — cannot add a new category block.");
+  }
+  return html.replace(marker, `${newBlock}${marker}`);
 }
 
 async function main() {
   const topics = await loadTopics();
   const article = await generateArticle(topics);
 
-  // Guard against a duplicate/collided slug
   if (topics.some((t) => t.slug === article.slug)) {
     article.slug = `${article.slug}-${Date.now().toString(36)}`;
   }
 
   const html = await readFile(HTML_PATH, "utf8");
 
-  const image = IMAGE_POOL[topics.length % IMAGE_POOL.length];
-  const cardHtml = buildCardHtml(article, image, "00."); // temp number, fixed by renumber()
-  const articleHtml = buildArticleHtml(article, "00");
+  // Permanent number — assigned once, never recalculated from DOM position.
+  const num = String(topics.length + 1).padStart(2, "0");
 
-  let updated = html.replace(
-    "<!-- AUTO-CARDS:START (script inserts new card as first child here) -->",
-    `<!-- AUTO-CARDS:START (script inserts new card as first child here) -->\n${cardHtml}`
-  );
+  let updated = insertRow(html, article, num);
 
-  updated = updated.replace(
-    "<!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->",
-    `<!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->\n${articleHtml}`
-  );
-
-  if (updated === html) {
-    throw new Error("Insertion markers not found — engineering-articles.html may have been restructured.");
+  const articleHtml = buildArticleHtml(article, num);
+  const articleMarker =
+    "<!-- AUTO-ARTICLES:START (script inserts new full article as first child here) -->";
+  if (!updated.includes(articleMarker)) {
+    throw new Error("AUTO-ARTICLES:START marker not found — engineering-articles.html may have been restructured.");
   }
-
-  updated = renumber(updated);
+  updated = updated.replace(articleMarker, `${articleMarker}\n${articleHtml}`);
 
   await writeFile(HTML_PATH, updated, "utf8");
 
   topics.push({
     slug: article.slug,
     title: article.title,
-    category: article.category,
+    category: article.category, // always the clean, non-escaped form
     date_added: new Date().toISOString().slice(0, 10),
   });
   await saveTopics(topics);
 
-  // Expose the title to the workflow for the commit message
   if (process.env.GITHUB_ENV) {
     await writeFile(
       process.env.GITHUB_ENV,
@@ -228,7 +274,7 @@ async function main() {
     );
   }
 
-  console.log(`Added article: ${article.title} (${article.slug})`);
+  console.log(`Added article: ${article.title} (${article.slug}, #${num}, ${article.category})`);
 }
 
 main().catch((err) => {
