@@ -644,3 +644,36 @@ const pdfBtn = document.getElementById('calcHistoryPdfBtn');
   calcBtn.addEventListener('click', calculate);
   clearBtn.addEventListener('click', clearForm);
 })();
+
+// Project gallery — minimal carousel (no autoplay, touch-swipe enabled)
+(function () {
+  const carousels = document.querySelectorAll('[data-carousel]');
+  if (!carousels.length) return;
+
+  carousels.forEach(carousel => {
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    const dots = carousel.querySelectorAll('.carousel-dots span');
+    const prevBtn = carousel.querySelector('.carousel-nav.prev');
+    const nextBtn = carousel.querySelector('.carousel-nav.next');
+    let index = 0;
+
+    const show = i => {
+      index = (i + slides.length) % slides.length;
+      slides.forEach((s, n) => s.classList.toggle('is-active', n === index));
+      dots.forEach((d, n) => d.classList.toggle('is-active', n === index));
+    };
+
+    if (prevBtn) prevBtn.addEventListener('click', () => show(index - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => show(index + 1));
+    dots.forEach((dot, n) => dot.addEventListener('click', () => show(n)));
+
+    let startX = null;
+    carousel.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+    carousel.addEventListener('touchend', e => {
+      if (startX === null) return;
+      const diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 40) show(diff < 0 ? index + 1 : index - 1);
+      startX = null;
+    }, { passive: true });
+  });
+})();
