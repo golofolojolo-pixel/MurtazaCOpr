@@ -92,7 +92,91 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     <!-- PAGE CONTENT — PASTE YOUR CONTENT FOR "PROJECT GALLERY" HERE -->
     <!-- ============================================================ -->
 
+    <div class="project-list">
 
+      <!-- Example 1 -->
+      <article class="project-entry reveal">
+        <div class="project-main">
+          <figure class="project-carousel" data-carousel>
+            <div class="carousel-track">
+              <div class="carousel-slide is-active"><img src="images/projects/al-fateh-1.jpg" alt="Pipe spool fabrication at Al-Fateh Steel Mills site" /></div>
+              <div class="carousel-slide"><img src="images/projects/al-fateh-2.jpg" alt="Stacked carbon steel pipes ready for delivery" /></div>
+              <div class="carousel-slide"><img src="images/projects/al-fateh-3.jpg" alt="Site installation of supplied flanges and fittings" /></div>
+            </div>
+            <button type="button" class="carousel-nav prev" aria-label="Previous image">&larr;</button>
+            <button type="button" class="carousel-nav next" aria-label="Next image">&rarr;</button>
+            <div class="carousel-dots">
+              <span class="is-active" aria-label="Slide 1"></span>
+              <span aria-label="Slide 2"></span>
+              <span aria-label="Slide 3"></span>
+            </div>
+          </figure>
+
+          <div class="project-info">
+            <h3 class="project-company">Al-Fateh Steel Mills</h3>
+            <p class="project-department">Procurement Department</p>
+            <p class="project-summary">Supplied ASTM A106 Gr. B carbon steel pipes, forged fittings and flanges for a mill utility line replacement. Scope covered material sourcing, mill test report coordination and staged delivery across three site batches.</p>
+          </div>
+        </div>
+
+        <div class="project-date">January 2025</div>
+      </article>
+
+      <!-- Example 2 -->
+      <article class="project-entry reveal">
+        <div class="project-main">
+          <figure class="project-carousel" data-carousel>
+            <div class="carousel-track">
+              <div class="carousel-slide is-active"><img src="images/projects/karachi-textile-1.jpg" alt="Stainless steel tubing supplied for utility upgrade" /></div>
+              <div class="carousel-slide"><img src="images/projects/karachi-textile-2.jpg" alt="Valve assembly installed on process line" /></div>
+            </div>
+            <button type="button" class="carousel-nav prev" aria-label="Previous image">&larr;</button>
+            <button type="button" class="carousel-nav next" aria-label="Next image">&rarr;</button>
+            <div class="carousel-dots">
+              <span class="is-active" aria-label="Slide 1"></span>
+              <span aria-label="Slide 2"></span>
+            </div>
+          </figure>
+
+          <div class="project-info">
+            <h3 class="project-company">Karachi Textile Processing Ltd.</h3>
+            <p class="project-department">Utility Upgrade Project</p>
+            <p class="project-summary">Provided stainless steel 300-series tubing and industrial ball valves for the steam distribution upgrade. Murtaza Corporation managed technical submittals and on-site delivery scheduling to keep the plant running during changeover.</p>
+          </div>
+        </div>
+
+        <div class="project-date">March 2024</div>
+      </article>
+
+      <!-- Example 3 -->
+      <article class="project-entry reveal">
+        <div class="project-main">
+          <figure class="project-carousel" data-carousel>
+            <div class="carousel-track">
+              <div class="carousel-slide is-active"><img src="images/projects/sindh-engineering-1.jpg" alt="Fabricated steel plate sections at Sindh Engineering Works" /></div>
+              <div class="carousel-slide"><img src="images/projects/sindh-engineering-2.jpg" alt="Structural steel components staged for shipment" /></div>
+              <div class="carousel-slide"><img src="images/projects/sindh-engineering-3.jpg" alt="Welded fittings inspection before dispatch" /></div>
+            </div>
+            <button type="button" class="carousel-nav prev" aria-label="Previous image">&larr;</button>
+            <button type="button" class="carousel-nav next" aria-label="Next image">&rarr;</button>
+            <div class="carousel-dots">
+              <span class="is-active" aria-label="Slide 1"></span>
+              <span aria-label="Slide 2"></span>
+              <span aria-label="Slide 3"></span>
+            </div>
+          </figure>
+
+          <div class="project-info">
+            <h3 class="project-company">Sindh Engineering Works</h3>
+            <p class="project-department">Process Engineering Division</p>
+            <p class="project-summary">Supplied structural steel plate, welded fittings and process piping components for a new production line. Involvement spanned material certification, quality inspection sign-off and phased delivery aligned to the client's construction schedule.</p>
+          </div>
+        </div>
+
+        <div class="project-date">Q4 2023</div>
+      </article>
+
+    </div>
 
     <!-- ============================================================ -->
     <!-- END PAGE CONTENT                                              -->
@@ -136,6 +220,36 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 </footer>
 
 <script src="script.js" defer></script>
+<script>
+  // Project gallery — minimal carousel (no autoplay, no dependencies)
+  document.querySelectorAll('[data-carousel]').forEach(function (carousel) {
+    var slides = carousel.querySelectorAll('.carousel-slide');
+    var dots = carousel.querySelectorAll('.carousel-dots span');
+    var prevBtn = carousel.querySelector('.carousel-nav.prev');
+    var nextBtn = carousel.querySelector('.carousel-nav.next');
+    var index = 0;
+
+    function show(i) {
+      index = (i + slides.length) % slides.length;
+      slides.forEach(function (s, n) { s.classList.toggle('is-active', n === index); });
+      dots.forEach(function (d, n) { d.classList.toggle('is-active', n === index); });
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', function () { show(index - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { show(index + 1); });
+    dots.forEach(function (dot, n) { dot.addEventListener('click', function () { show(n); }); });
+
+    // Touch swipe support
+    var startX = null;
+    carousel.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    carousel.addEventListener('touchend', function (e) {
+      if (startX === null) return;
+      var diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 40) show(diff < 0 ? index + 1 : index - 1);
+      startX = null;
+    }, { passive: true });
+  });
+</script>
 <a href="#" class="calculator-widget" id="calculatorWidgetBtn" aria-label="Open pipe calculator">
     <span class="whatsapp-text">Calculator</span>
     <div class="calculator-icon"><i class="fa-solid fa-calculator"></i></div>
